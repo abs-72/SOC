@@ -1,0 +1,93 @@
+<#
+.SYNOPSIS
+    Installs Filebeat Windows service.
+.DESCRIPTION
+    Installs Filebeat Windows service, the data and logs path are
+    set as part of the command for the service.
+
+    For Filebeat < 9.1.0 the data path used to be
+    'C:\ProgramData\Filebeat' (set from '$env:ProgramData) for >= 9.1.0
+    the new default is 'C:\Program Files\Filebeat-Data'
+    (set from '$env:ProgramFiles').
+
+    If the legacy data path exists, then the script will move it to the new place,
+    regardless of Filebeat version.
+
+    You can pass ForceLegacyPath to use the legacy data path.
+
+    If the Windows service already exists, it will be stopped and deleted, then
+    the new one will be installed.
+#>
+
+Param (
+  # Force the usage of the legacy ( < 9.1.0) data path.
+  [switch]$ForceLegacyPath
+
+)
+
+# Delete and stop the service if it already exists.
+if (Get-Service filebeat -ErrorAction SilentlyContinue) {
+  Stop-Service filebeat
+  (Get-Service filebeat).WaitForStatus('Stopped')
+  Start-Sleep -s 1
+  sc.exe delete filebeat
+}
+
+# We need to support a new default path for the data folder, ideally
+# automatically detecting if the old one is used and keeping it
+
+$WorkDir = Split-Path $MyInvocation.MyCommand.Path
+$BasePath = "$env:ProgramFiles\Filebeat-Data"
+$LegacyDataPath = "$env:PROGRAMDATA\Filebeat"
+
+# Move the data path from ProgramData to Program Files
+If ($ForceLegacyPath -eq $True) {
+  $BasePath = $LegacyDataPath
+} elseif (Test-Path $LegacyDataPath) {
+    Write-Output "Files found at $LegacyDataPath, moving them to $BasePath"
+  Try {
+    $BeatPath = "$BasePath\Filebeat"
+    if (-not (Test-Path $BeatPath)) {
+      New-Item -ItemType Directory -Path $BeatPath -ErrorAction Stop | Out-Null
+    }
+
+    Get-ChildItem -LiteralPath $LegacyDataPath -Force | ForEach-Object {
+      $dest = Join-Path $BeatPath $_.Name
+      if (Test-Path $dest) {
+          Remove-Item $dest -Recurse -Force -ErrorAction Stop
+      }
+      Move-Item $_.FullName $dest -ErrorAction Stop
+    }
+    Remove-Item $LegacyDataPath -Recurse -Force -ErrorAction Stop
+    Write-Output "Successfully moved $LegacyDataPath to $BeatPath"
+  } Catch {
+    Write-Output "Could not move $LegacyDataPath to $BasePath"
+    Write-Output "make sure the folder can be moved or set -ForceLegacyPath"
+    Write-Output "to force using $LegacyDataPath as the data path"
+    Throw $_.Exception
+  }
+}
+
+$HomePath = "$BasePath\Filebeat"
+$LogsPath = "$HomePath\logs"
+$KeystorePath = "$WorkDir\data\Filebeat.keystore"
+
+$FullCmd = "`"$WorkDir\filebeat.exe`" " +
+           "--environment=windows_service " +
+           "-c `"$WorkDir\filebeat.yml`" " +
+           "--path.home `"$WorkDir`" " +
+           "--path.data `"$HomePath`" " +
+           "--path.logs `"$LogsPath`" " +
+           "-E keystore.path=`"$KeyStorePath`" " +
+           "-E logging.files.redirect_stderr=true"
+
+# Create the new service.
+New-Service -name filebeat `
+  -displayName Filebeat `
+  -binaryPathName $FullCmd
+
+# Attempt to set the service to delayed start using sc config.
+Try {
+  Start-Process -FilePath sc.exe -ArgumentList 'config filebeat start= delayed-auto'
+}
+Catch { Write-Host -f red "An error occurred setting the service to delayed start." }
