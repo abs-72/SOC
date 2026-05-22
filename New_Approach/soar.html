@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogSOC — SOAR Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--surface:#111827;--card:#1a2236;--border:#1e2d4a;--text:#e2e8f0;--muted:#64748b;
+--accent:#3b82f6;--accent2:#8b5cf6;--green:#10b981;--red:#ef4444;--orange:#f59e0b;--yellow:#eab308;--cyan:#06b6d4;--pink:#ec4899}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.top-bar{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo span{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+.nav-tabs{display:flex;gap:4px;background:rgba(255,255,255,.05);padding:4px;border-radius:10px}
+.nav-tab{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:none}
+.nav-tab.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.4)}
+.nav-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.status{display:flex;align-items:center;gap:12px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;box-shadow:0 0 8px var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.refresh-info{font-size:12px;color:var(--muted)}
+.main{padding:24px 32px;max-width:1600px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;overflow:hidden;transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.stat-card:nth-child(1)::before{background:linear-gradient(90deg,var(--red),var(--orange))}
+.stat-card:nth-child(2)::before{background:linear-gradient(90deg,var(--cyan),var(--accent))}
+.stat-card:nth-child(3)::before{background:linear-gradient(90deg,var(--orange),var(--yellow))}
+.stat-card:nth-child(4)::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.stat-card:nth-child(5)::before{background:linear-gradient(90deg,var(--accent2),var(--pink))}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.stat-value{font-size:32px;font-weight:800;margin:8px 0 4px;letter-spacing:-1px}
+.stat-sub{font-size:12px;color:var(--muted)}
+.sc1 .stat-value{color:var(--red)}.sc2 .stat-value{color:var(--cyan)}.sc3 .stat-value{color:var(--orange)}.sc4 .stat-value{color:var(--green)}.sc5 .stat-value{color:var(--accent2)}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.chart-title::before{content:'';width:4px;height:16px;border-radius:2px;background:var(--accent2)}
+.chart-wrap{position:relative;height:280px}
+.three-col{grid-template-columns:1fr 1fr 1fr}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--muted);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:1px;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid rgba(30,45,74,.4)}
+tr:hover td{background:rgba(59,130,246,.05)}
+.sev-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.sev-CRITICAL{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.sev-HIGH{background:rgba(245,158,11,.15);color:var(--orange);border:1px solid rgba(245,158,11,.3)}
+.sev-MEDIUM{background:rgba(234,179,8,.15);color:var(--yellow);border:1px solid rgba(234,179,8,.3)}
+.sev-LOW{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.status-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.st-OPEN{background:rgba(239,68,68,.12);color:var(--red)}
+.st-INVESTIGATING{background:rgba(245,158,11,.12);color:var(--orange)}
+.st-CONTAINED{background:rgba(6,182,212,.12);color:var(--cyan)}
+.st-CLOSED{background:rgba(16,185,129,.12);color:var(--green)}
+.action-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.act-IP_BLOCK{background:rgba(239,68,68,.12);color:var(--red)}
+.act-ALERT_SENT{background:rgba(245,158,11,.12);color:var(--orange)}
+.act-ESCALATED{background:rgba(139,92,246,.12);color:var(--accent2)}
+.act-UNBLOCK{background:rgba(16,185,129,.12);color:var(--green)}
+.act-QUARANTINE{background:rgba(236,72,153,.12);color:var(--pink)}
+.method-AUTO{color:var(--cyan)}.method-MANUAL{color:var(--orange)}
+.no-data{text-align:center;padding:60px;color:var(--muted);font-size:14px}
+.report-btn{padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;
+  background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;border:none;
+  box-shadow:0 2px 12px rgba(16,185,129,.3);transition:all .2s;letter-spacing:.5px}
+.report-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(16,185,129,.4)}
+/* Modal Styles */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:1000;justify-content:center;align-items:center;backdrop-filter:blur(4px)}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;width:600px;max-width:90%;box-shadow:0 20px 40px rgba(0,0,0,.5);overflow:hidden}
+.modal-header{padding:16px 24px;background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(6,182,212,.1));border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{display:flex;align-items:center;gap:8px;font-size:16px;color:var(--text)}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;transition:color .2s}
+.modal-close:hover{color:var(--red)}
+.modal-body{padding:24px;font-size:14px;color:var(--text);line-height:1.6;max-height:60vh;overflow-y:auto}
+.ai-loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:12px;color:var(--accent2)}
+.ai-spinner{width:20px;height:20px;border:3px solid rgba(139,92,246,.3);border-top-color:var(--accent2);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-ai{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:var(--accent2);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}
+.btn-ai:hover{background:var(--accent2);color:#fff}
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}}
+@media(max-width:768px){.stats-row{grid-template-columns:1fr 1fr}.three-col{grid-template-columns:1fr}}
+@keyframes flashNew{0%{background:rgba(139,92,246,.25)}100%{background:transparent}}
+.flash-new{animation:flashNew 1.5s ease-out}
+.countdown-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#8b5cf6,#06b6d4);z-index:9999;transition:width .1s linear}
+.new-badge{background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;animation:pulse 1s infinite}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="logo">
+    <img src="logo.png" alt="CogSOC" style="height:40px;border-radius:8px">
+    <div><h1>CogSOC Dashboard</h1><span>AI-Driven Autonomous Defense</span></div>
+  </div>
+  <div style="display:flex;gap:4px;background:rgba(255,255,255,.05);padding:4px;border-radius:10px">
+    <a href="dashboard.html" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none">AI Analysis</a>
+    <a href="soar.html" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;background:var(--accent2);color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(139,92,246,.4)">SOAR</a>
+  </div>
+  <div class="status" style="gap:16px">
+    <button class="report-btn" onclick="generateReport()">📄 Generate Executive Report</button>
+    <div class="status-dot"></div>
+    <span class="refresh-info" id="lastUpdate">Loading...</span>
+  </div>
+</div>
+
+<div class="main">
+ <div id="page-soar" class="page active">
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card sc1"><div class="stat-label">Open Incidents</div><div class="stat-value" id="sOpen">—</div><div class="stat-sub">need attention</div></div>
+    <div class="stat-card sc2"><div class="stat-label">Avg MTTD</div><div class="stat-value" id="sMttd">—</div><div class="stat-sub">mean time to detect</div></div>
+    <div class="stat-card sc3"><div class="stat-label">Avg MTTR</div><div class="stat-value" id="sMttr">—</div><div class="stat-sub">mean time to respond</div></div>
+    <div class="stat-card sc4"><div class="stat-label">Auto-Block Rate</div><div class="stat-value" id="sBlock">—</div><div class="stat-sub">automated response</div></div>
+    <div class="stat-card sc5"><div class="stat-label">Total Incidents</div><div class="stat-value" id="sTotal">—</div><div class="stat-sub">all time</div></div>
+  </div>
+  <!-- Charts Row 1 -->
+  <div class="charts-row">
+    <div class="chart-card"><div class="chart-title">Incident Timeline</div><div class="chart-wrap"><canvas id="incTimeline"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Incident Status</div><div class="chart-wrap"><canvas id="incStatus"></canvas></div></div>
+  </div>
+  <!-- Charts Row 2 -->
+  <div class="charts-row three-col">
+    <div class="chart-card"><div class="chart-title">Response Actions</div><div class="chart-wrap"><canvas id="respActions"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Auto vs Manual</div><div class="chart-wrap"><canvas id="autoManual"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Severity Breakdown</div><div class="chart-wrap"><canvas id="sevBreak"></canvas></div></div>
+  </div>
+  <!-- Active Incidents Table -->
+  <div class="table-card">
+    <div class="chart-title">Active Incidents</div>
+    <div style="overflow-x:auto">
+      <table><thead><tr>
+        <th>Time</th><th>ID</th><th>Attacker</th><th>Victim</th><th>Attack</th>
+        <th>Alerts</th><th>Severity</th><th>Status</th><th>MTTR</th><th>Copilot</th>
+      </tr></thead>
+      <tbody id="incTable"><tr><td colspan="10" class="no-data">Loading...</td></tr></tbody></table>
+    </div>
+  </div>
+  <!-- Response Log -->
+  <div class="table-card">
+    <div class="chart-title">Response Action Log</div>
+    <div style="overflow-x:auto">
+      <table><thead><tr>
+        <th>Time</th><th>Incident</th><th>Action</th><th>Target IP</th><th>Method</th><th>Status</th><th>Details</th>
+      </tr></thead>
+      <tbody id="respTable"><tr><td colspan="7" class="no-data">Loading...</td></tr></tbody></table>
+    </div>
+  </div>
+ </div>
+</div>
+
+<!-- Copilot Modal -->
+<div class="modal-overlay" id="copilotModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✨ GenAI Security Copilot</h3>
+      <button class="modal-close" onclick="closeCopilot()">&times;</button>
+    </div>
+    <div class="modal-body" id="copilotContent">
+      <!-- Content injected here -->
+    </div>
+  </div>
+</div>
+
+<script>
+const ES='/es', INC='cogsoc-incidents', RESP='cogsoc-responses', REFRESH=5000;
+let _lastIncCount=0, _refreshing=false, _countdownTimer=null;
+const COLORS={CRITICAL:'#ef4444',HIGH:'#f59e0b',MEDIUM:'#eab308',LOW:'#10b981',
+OPEN:'#ef4444',INVESTIGATING:'#f59e0b',CONTAINED:'#06b6d4',CLOSED:'#10b981'};
+const CC=['#3b82f6','#8b5cf6','#06b6d4','#ec4899','#10b981','#f59e0b','#ef4444'];
+Chart.defaults.color='#64748b';Chart.defaults.borderColor='rgba(30,45,74,0.5)';Chart.defaults.font.family='Inter';
+let charts={};
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+async function eq(idx,body){
+  try{const r=await fetch(`${ES}/${idx}/_search`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}
+  catch(e){return null;}
+}
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  event.target.classList.add('active');
+}
+
+async function loadStats(){
+  const d=await eq(INC,{size:0,aggs:{
+    open:{filter:{term:{'status.keyword':'OPEN'}}},
+    mttd:{avg:{field:'ttd_seconds'}},
+    mttr:{avg:{field:'ttr_seconds'}},
+    blocked:{filter:{term:{blocked:true}}}
+  }});
+  if(!d)return;
+  const t=d.hits?.total?.value||0;
+  const o=d.aggregations?.open?.doc_count||0;
+  const mttd=d.aggregations?.mttd?.value||0;
+  const mttr=d.aggregations?.mttr?.value||0;
+  const bl=d.aggregations?.blocked?.doc_count||0;
+  document.getElementById('sOpen').textContent=o;
+  document.getElementById('sMttd').textContent=mttd.toFixed(1)+'s';
+  document.getElementById('sMttr').textContent=mttr.toFixed(1)+'s';
+  document.getElementById('sBlock').textContent=t>0?((bl/t)*100).toFixed(0)+'%':'0%';
+  document.getElementById('sTotal').textContent=t;
+}
+
+async function loadIncTimeline(){
+  const d=await eq(INC,{size:0,aggs:{tl:{date_histogram:{field:'@timestamp',calendar_interval:'hour'},
+    aggs:{sev:{terms:{field:'severity.keyword'}}}}}});
+  if(!d)return;
+  const b=d.aggregations?.tl?.buckets||[];
+  const labels=b.map(x=>new Date(x.key_as_string).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  const sevs=['CRITICAL','HIGH','MEDIUM','LOW'];
+  dc('incTimeline');
+  charts.incTimeline=new Chart(document.getElementById('incTimeline'),{
+    type:'bar',data:{labels,datasets:sevs.map(s=>({label:s,
+      data:b.map(x=>{const f=x.sev?.buckets?.find(v=>v.key===s);return f?f.doc_count:0;}),
+      backgroundColor:COLORS[s]+'cc',borderRadius:4}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:11}}}},
+      scales:{x:{stacked:true,ticks:{font:{size:10}}},y:{stacked:true,beginAtZero:true}}}
+  });
+}
+
+async function loadIncStatus(){
+  const d=await eq(INC,{size:0,aggs:{st:{terms:{field:'status.keyword'}}}});
+  if(!d)return;const b=d.aggregations?.st?.buckets||[];
+  dc('incStatus');
+  charts.incStatus=new Chart(document.getElementById('incStatus'),{
+    type:'doughnut',data:{labels:b.map(x=>x.key),datasets:[{data:b.map(x=>x.doc_count),
+      backgroundColor:b.map(x=>(COLORS[x.key]||'#64748b')+'cc'),borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{position:'bottom',labels:{padding:14,boxWidth:12,font:{size:11}}}}}
+  });
+}
+
+async function loadRespActions(){
+  const d=await eq(RESP,{size:0,aggs:{act:{terms:{field:'action_type.keyword'}}}});
+  if(!d)return;const b=d.aggregations?.act?.buckets||[];
+  dc('respActions');
+  charts.respActions=new Chart(document.getElementById('respActions'),{
+    type:'bar',data:{labels:b.map(x=>x.key),datasets:[{data:b.map(x=>x.doc_count),
+      backgroundColor:CC.map(c=>c+'cc'),borderColor:CC,borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
+      scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:11}}}}}
+  });
+}
+
+async function loadAutoManual(){
+  const d=await eq(RESP,{size:0,aggs:{m:{terms:{field:'method.keyword'}}}});
+  if(!d)return;const b=d.aggregations?.m?.buckets||[];
+  dc('autoManual');
+  charts.autoManual=new Chart(document.getElementById('autoManual'),{
+    type:'doughnut',data:{labels:b.map(x=>x.key==='AUTO'?'Automated':'Manual'),
+      datasets:[{data:b.map(x=>x.doc_count),backgroundColor:['#06b6d4cc','#f59e0bcc'],borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{padding:14,boxWidth:12,font:{size:11}}}}}
+  });
+}
+
+async function loadSevBreak(){
+  const d=await eq(INC,{size:0,aggs:{s:{terms:{field:'severity.keyword'}}}});
+  if(!d)return;const b=d.aggregations?.s?.buckets||[];
+  dc('sevBreak');
+  charts.sevBreak=new Chart(document.getElementById('sevBreak'),{
+    type:'polarArea',data:{labels:b.map(x=>x.key),datasets:[{data:b.map(x=>x.doc_count),
+      backgroundColor:b.map(x=>(COLORS[x.key]||'#64748b')+'99'),borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{padding:12,boxWidth:12,font:{size:11}}}}}
+  });
+}
+
+async function loadIncTable(){
+  const d=await eq(INC,{size:50,sort:[{'@timestamp':'desc'}]});
+  const tb=document.getElementById('incTable');
+  if(!d||!d.hits?.hits?.length){tb.innerHTML='<tr><td colspan="10" class="no-data">No incidents</td></tr>';return;}
+  tb.innerHTML=d.hits.hits.map(h=>{const a=h._source;
+    const t=new Date(a['@timestamp']).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    return `<tr>
+      <td style="white-space:nowrap">${t}</td>
+      <td><strong>${a.incident_id}</strong></td>
+      <td><strong>${a.src_ip}</strong></td>
+      <td>${a.dst_ip}</td>
+      <td>${a.attack_type}</td>
+      <td><strong>${a.alert_count}</strong></td>
+      <td><span class="sev-badge sev-${a.severity}">${a.severity}</span></td>
+      <td><span class="status-badge st-${a.status}">${a.status}</span></td>
+      <td>${a.ttr_seconds>0?a.ttr_seconds.toFixed(1)+'s':'—'}</td>
+      <td>
+        <button class="btn-ai" onclick='askCopilot(${JSON.stringify({
+          id:a.incident_id,attack:a.attack_type,attacker:a.src_ip,victim:a.dst_ip,
+          severity:a.severity,alerts:a.alert_count,mitre:a.mitre_technique||'Unknown',
+          sensor:a.sensor_name
+        }).replace(/'/g,"&apos;")})'>✨ Ask AI</button>
+      </td>
+    </tr>`;}).join('');
+}
+
+async function loadRespTable(){
+  const d=await eq(RESP,{size:30,sort:[{'@timestamp':'desc'}]});
+  const tb=document.getElementById('respTable');
+  if(!d||!d.hits?.hits?.length){tb.innerHTML='<tr><td colspan="7" class="no-data">No response actions</td></tr>';return;}
+  tb.innerHTML=d.hits.hits.map(h=>{const a=h._source;
+    const t=new Date(a['@timestamp']).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    return `<tr>
+      <td style="white-space:nowrap">${t}</td>
+      <td><strong>${a.incident_id}</strong></td>
+      <td><span class="action-badge act-${a.action_type}">${a.action_type}</span></td>
+      <td>${a.src_ip}</td>
+      <td><span class="method-${a.method}">${a.method}</span></td>
+      <td>${a.status}</td>
+      <td style="font-size:11px">${a.details||''}</td>
+    </tr>`;}).join('');
+}
+
+async function refreshAll(){
+  if(_refreshing) return;
+  _refreshing=true;
+  try{
+    await Promise.all([loadStats(),loadIncTimeline(),loadIncStatus(),loadRespActions(),
+      loadAutoManual(),loadSevBreak(),loadIncTable(),loadRespTable()]);
+    const cur=parseInt(document.getElementById('sTotal')?.textContent||'0');
+    if(_lastIncCount>0 && cur>_lastIncCount){
+      const diff=cur-_lastIncCount;
+      document.getElementById('lastUpdate').innerHTML=
+        `Live • ${new Date().toLocaleTimeString()} • <span class="new-badge">+${diff} NEW</span>`;
+      document.querySelectorAll('#incTable tr').forEach((r,i)=>{
+        if(i<diff) r.classList.add('flash-new');
+        setTimeout(()=>r.classList.remove('flash-new'),2000);
+      });
+    } else {
+      document.getElementById('lastUpdate').textContent=
+        `Live • ${new Date().toLocaleTimeString()} • Auto ${REFRESH/1000}s`;
+    }
+    _lastIncCount=cur;
+  } catch(e){console.error('Refresh error:',e);}
+  _refreshing=false;
+}
+function startCountdown(){
+  let bar=document.querySelector('.countdown-bar');
+  if(!bar){bar=document.createElement('div');bar.className='countdown-bar';document.body.prepend(bar);}
+  let elapsed=0;const step=50;
+  clearInterval(_countdownTimer);
+  bar.style.width='0%';
+  _countdownTimer=setInterval(()=>{
+    elapsed+=step;bar.style.width=(elapsed/REFRESH*100)+'%';
+    if(elapsed>=REFRESH){elapsed=0;bar.style.width='0%';}
+  },step);
+}
+refreshAll();startCountdown();setInterval(refreshAll,REFRESH);
+
+// ═══════════════════════════════════════════════
+//  GENAI COPILOT
+// ═══════════════════════════════════════════════
+function closeCopilot() {
+  document.getElementById('copilotModal').classList.remove('active');
+}
+
+async function askCopilot(incData) {
+  const modal = document.getElementById('copilotModal');
+  const content = document.getElementById('copilotContent');
+  modal.classList.add('active');
+  content.innerHTML = `<div class="ai-loading"><div class="ai-spinner"></div> Analyzing Incident ${incData.id}...</div>`;
+
+  try {
+    const res = await fetch('/copilot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(incData)
+    });
+    
+    if (res.status === 400) {
+      content.innerHTML = `<div style="color:var(--orange)">⚠️ <strong>Gemini API Key Missing</strong><br><br>Please edit <code>cogsoc_behav.py</code> and set your <code>GEMINI_API_KEY</code>.</div>`;
+      return;
+    }
+    
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    
+    content.innerHTML = data.response;
+  } catch(e) {
+    content.innerHTML = `<div style="color:var(--red)">❌ Failed to generate analysis: ${e.message}</div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  EXECUTIVE REPORT GENERATOR
+//  Standards: NIST SP 800-61 | ISO 27035 | SANS IR
+// ═══════════════════════════════════════════════
+async function generateReport(){
+  // Fetch all data
+  const [incData, respData, statsData] = await Promise.all([
+    eq(INC,{size:100,sort:[{'@timestamp':'desc'}]}),
+    eq(RESP,{size:200,sort:[{'@timestamp':'desc'}]}),
+    eq(INC,{size:0,aggs:{
+      open:{filter:{term:{'status.keyword':'OPEN'}}},
+      investigating:{filter:{term:{'status.keyword':'INVESTIGATING'}}},
+      contained:{filter:{term:{'status.keyword':'CONTAINED'}}},
+      closed:{filter:{term:{'status.keyword':'CLOSED'}}},
+      mttd:{avg:{field:'ttd_seconds'}},
+      mttr:{avg:{field:'ttr_seconds'}},
+      blocked:{filter:{term:{blocked:true}}},
+      sev:{terms:{field:'severity.keyword'}},
+      types:{terms:{field:'attack_type.keyword',size:20}},
+      sensors:{terms:{field:'sensor_name.keyword',size:10}},
+      mitre:{terms:{field:'mitre_technique.keyword',size:20}},
+      total_alerts:{sum:{field:'alert_count'}},
+    }})
+  ]);
+
+  const incidents = incData?.hits?.hits?.map(h=>h._source)||[];
+  const responses = respData?.hits?.hits?.map(h=>h._source)||[];
+  const agg = statsData?.aggregations||{};
+  const total = statsData?.hits?.total?.value||0;
+  const now = new Date();
+  const rptId = `RPT-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+
+  // Severity counts
+  const sevCounts = {};
+  (agg.sev?.buckets||[]).forEach(b=>sevCounts[b.key]=b.doc_count);
+
+  // Attack type summary
+  const attackTypes = (agg.types?.buckets||[]).map(b=>`<tr><td>${b.key}</td><td style="text-align:center">${b.doc_count}</td></tr>`).join('');
+
+  // MITRE techniques
+  const mitreTech = (agg.mitre?.buckets||[]).map(b=>`<tr><td>${b.key}</td><td style="text-align:center">${b.doc_count}</td></tr>`).join('');
+
+  // Sensor breakdown
+  const sensors = (agg.sensors?.buckets||[]).map(b=>`<tr><td>${b.key}</td><td style="text-align:center">${b.doc_count}</td></tr>`).join('');
+
+  // Incident table rows
+  const incRows = incidents.map(a=>{
+    const t = new Date(a['@timestamp']);
+    const sevColor = a.severity==='CRITICAL'?'#dc2626':a.severity==='HIGH'?'#d97706':a.severity==='MEDIUM'?'#ca8a04':'#059669';
+    const stColor = a.status==='OPEN'?'#dc2626':a.status==='INVESTIGATING'?'#d97706':a.status==='CONTAINED'?'#0891b2':'#059669';
+    return `<tr>
+      <td>${t.toLocaleDateString()} ${t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td>
+      <td><strong>${a.incident_id}</strong></td>
+      <td>${a.src_ip}</td><td>${a.dst_ip}</td>
+      <td>${a.attack_type}</td>
+      <td style="text-align:center">${a.alert_count}</td>
+      <td style="text-align:center"><span style="background:${sevColor};color:#fff;padding:2px 10px;border-radius:12px;font-size:11px">${a.severity}</span></td>
+      <td style="text-align:center"><span style="background:${stColor};color:#fff;padding:2px 10px;border-radius:12px;font-size:11px">${a.status}</span></td>
+      <td style="text-align:center">${a.mitre_technique||'—'}</td>
+      <td style="text-align:center">${a.ttr_seconds>0?a.ttr_seconds.toFixed(1)+'s':'—'}</td>
+    </tr>`;
+  }).join('');
+
+  // Response action rows
+  const respRows = responses.slice(0,30).map(a=>{
+    const t = new Date(a['@timestamp']);
+    return `<tr>
+      <td>${t.toLocaleDateString()} ${t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</td>
+      <td>${a.incident_id}</td><td>${a.action_type}</td>
+      <td>${a.src_ip}</td><td>${a.method}</td><td>${a.status}</td>
+      <td>${a.details||''}</td></tr>`;
+  }).join('');
+
+  // Risk level determination
+  const critCount = sevCounts['CRITICAL']||0;
+  const highCount = sevCounts['HIGH']||0;
+  const overallRisk = critCount>=3?'CRITICAL':critCount>=1||highCount>=3?'HIGH':highCount>=1?'MEDIUM':'LOW';
+  const riskColor = overallRisk==='CRITICAL'?'#dc2626':overallRisk==='HIGH'?'#d97706':overallRisk==='MEDIUM'?'#ca8a04':'#059669';
+
+  const mttd = (agg.mttd?.value||0).toFixed(1);
+  const mttr = (agg.mttr?.value||0).toFixed(1);
+  const blockRate = total>0?((agg.blocked?.doc_count||0)/total*100).toFixed(1):'0';
+  const totalAlerts = agg.total_alerts?.value||0;
+
+  // Build report HTML
+  const reportHTML = `<!DOCTYPE html><html><head>
+<meta charset="UTF-8"><title>CogSOC Incident Report — ${rptId}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',Arial,sans-serif;color:#1e293b;background:#fff;font-size:12px;line-height:1.6}
+  @media print{body{font-size:11px} .no-print{display:none!important} .page-break{page-break-before:always}}
+  .container{max-width:900px;margin:0 auto;padding:24px}
+  .print-bar{background:#0f172a;color:#fff;padding:12px 24px;text-align:right}
+  .print-bar button{background:#3b82f6;color:#fff;border:none;padding:8px 24px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;margin-left:8px}
+  .print-bar button:hover{background:#2563eb}
+  .print-bar button.sec{background:#64748b}
+  /* Header */
+  .rpt-header{border-bottom:3px solid #0f172a;padding-bottom:20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start}
+  .rpt-header h1{font-size:22px;color:#0f172a;margin-bottom:4px}
+  .rpt-header .sub{color:#64748b;font-size:12px}
+  .rpt-meta{text-align:right;font-size:11px;color:#64748b}
+  .rpt-meta strong{color:#0f172a}
+  .classification{background:#0f172a;color:#fff;padding:4px 14px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;display:inline-block;margin-bottom:8px}
+  /* Sections */
+  .section{margin-bottom:28px}
+  .section h2{font-size:15px;color:#0f172a;border-bottom:2px solid #e2e8f0;padding-bottom:6px;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px}
+  .section h3{font-size:13px;color:#334155;margin:12px 0 6px}
+  /* Risk banner */
+  .risk-banner{padding:16px 20px;border-radius:8px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+  .risk-dot{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:18px}
+  /* Stats grid */
+  .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+  .stat-box{border:1px solid #e2e8f0;border-radius:8px;padding:14px;text-align:center}
+  .stat-box .val{font-size:24px;font-weight:800;color:#0f172a}
+  .stat-box .lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+  /* Tables */
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+  th{background:#f1f5f9;padding:8px 10px;text-align:left;font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+  td{padding:7px 10px;border-bottom:1px solid #f1f5f9}
+  tr:hover td{background:#f8fafc}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  /* Compliance */
+  .compliance-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin:8px 0}
+  .compliance-box h4{font-size:12px;color:#0f172a;margin-bottom:6px}
+  .compliance-box ul{padding-left:18px;color:#475569;font-size:11px}
+  .compliance-box li{margin:3px 0}
+  /* Footer */
+  .rpt-footer{border-top:2px solid #0f172a;padding-top:16px;margin-top:32px;display:flex;justify-content:space-between;font-size:10px;color:#94a3b8}
+  .stamp{border:2px solid #0f172a;padding:8px 16px;text-align:center;font-size:10px;font-weight:600;color:#0f172a}
+</style></head><body>
+<div class="print-bar no-print">
+  <span style="float:left;font-size:13px">CogSOC Executive Incident Report — ${rptId}</span>
+  <button class="sec" onclick="window.close()">Close</button>
+  <button onclick="window.print()">🖨️ Print / Save PDF</button>
+</div>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="rpt-header">
+    <div>
+      <div class="classification">CONFIDENTIAL — INTERNAL USE ONLY</div>
+      <h1>Security Incident Report</h1>
+      <div class="sub">CogSOC — AI-Driven Autonomous Defense System</div>
+    </div>
+    <div class="rpt-meta">
+      <div><strong>Report ID:</strong> ${rptId}</div>
+      <div><strong>Generated:</strong> ${now.toLocaleDateString()} ${now.toLocaleTimeString()}</div>
+      <div><strong>Classification:</strong> Confidential</div>
+      <div><strong>Prepared By:</strong> CogSOC Automated SOAR</div>
+      <div><strong>Standards:</strong> NIST SP 800-61 | ISO 27035</div>
+    </div>
+  </div>
+
+  <!-- 1. EXECUTIVE SUMMARY -->
+  <div class="section">
+    <h2>1. Executive Summary</h2>
+    <div class="risk-banner" style="background:${riskColor}15;border:1px solid ${riskColor}40">
+      <div class="risk-dot" style="background:${riskColor}">${overallRisk[0]}</div>
+      <div>
+        <div style="font-weight:700;font-size:14px;color:${riskColor}">Overall Risk Assessment: ${overallRisk}</div>
+        <div style="color:#475569;font-size:12px;margin-top:4px">
+          During the reporting period, CogSOC detected <strong>${total} security incident(s)</strong>
+          generating <strong>${Math.round(totalAlerts).toLocaleString()} alert(s)</strong> across
+          <strong>${(agg.sensors?.buckets||[]).length} sensor node(s)</strong>.
+          ${critCount>0?`<strong style="color:#dc2626">${critCount} CRITICAL</strong> incident(s) require immediate executive attention.`:''}
+          The AI-driven detection system achieved a Mean Time to Detect (MTTD) of <strong>${mttd}s</strong>
+          and Mean Time to Respond (MTTR) of <strong>${mttr}s</strong> with an automated response rate of <strong>${blockRate}%</strong>.
+        </div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="val">${total}</div><div class="lbl">Total Incidents</div></div>
+      <div class="stat-box"><div class="val" style="color:#dc2626">${critCount}</div><div class="lbl">Critical</div></div>
+      <div class="stat-box"><div class="val">${mttd}s</div><div class="lbl">Avg MTTD</div></div>
+      <div class="stat-box"><div class="val">${mttr}s</div><div class="lbl">Avg MTTR</div></div>
+      <div class="stat-box"><div class="val" style="color:#059669">${blockRate}%</div><div class="lbl">Auto-Block Rate</div></div>
+    </div>
+  </div>
+
+  <!-- 2. INCIDENT CLASSIFICATION -->
+  <div class="section">
+    <h2>2. Incident Classification (NIST SP 800-61 Rev. 2)</h2>
+    <div class="two-col">
+      <div>
+        <h3>2.1 By Severity Level</h3>
+        <table>
+          <tr><th>Level</th><th style="text-align:center">Count</th><th>Description</th></tr>
+          <tr><td><span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">CRITICAL</span></td><td style="text-align:center"><strong>${sevCounts['CRITICAL']||0}</strong></td><td>Immediate threat — active exploitation</td></tr>
+          <tr><td><span style="background:#d97706;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">HIGH</span></td><td style="text-align:center"><strong>${sevCounts['HIGH']||0}</strong></td><td>Significant threat — active attack detected</td></tr>
+          <tr><td><span style="background:#ca8a04;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">MEDIUM</span></td><td style="text-align:center"><strong>${sevCounts['MEDIUM']||0}</strong></td><td>Potential threat — suspicious activity</td></tr>
+          <tr><td><span style="background:#059669;color:#fff;padding:2px 8px;border-radius:10px;font-size:10px">LOW</span></td><td style="text-align:center"><strong>${sevCounts['LOW']||0}</strong></td><td>Informational — minor anomaly</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>2.2 By Attack Type</h3>
+        <table><tr><th>Attack Vector</th><th style="text-align:center">Incidents</th></tr>${attackTypes}</table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. MITRE ATT&CK MAPPING -->
+  <div class="section">
+    <h2>3. MITRE ATT&CK® Framework Mapping</h2>
+    <p style="color:#475569;margin-bottom:10px">Detected techniques mapped to the MITRE ATT&CK Enterprise Matrix (v14) per CISA Binding Operational Directive 22-01 requirements.</p>
+    <div class="two-col">
+      <div>
+        <table><tr><th>Technique ID</th><th style="text-align:center">Occurrences</th></tr>${mitreTech}</table>
+      </div>
+      <div>
+        <h3>Sensor Coverage</h3>
+        <table><tr><th>Sensor Node</th><th style="text-align:center">Incidents</th></tr>${sensors}</table>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- 4. DETAILED INCIDENT LOG -->
+  <div class="section">
+    <h2>4. Detailed Incident Log</h2>
+    <p style="color:#475569;margin-bottom:10px">Complete list of security incidents detected during the monitoring period, ordered by most recent.</p>
+    <div style="overflow-x:auto">
+    <table>
+      <tr><th>Timestamp</th><th>Incident ID</th><th>Source IP</th><th>Destination IP</th><th>Attack Type</th><th style="text-align:center">Alerts</th><th style="text-align:center">Severity</th><th style="text-align:center">Status</th><th style="text-align:center">MITRE</th><th style="text-align:center">MTTR</th></tr>
+      ${incRows}
+    </table>
+    </div>
+  </div>
+
+  <!-- 5. RESPONSE ACTIONS -->
+  <div class="section">
+    <h2>5. Incident Response Actions (ISO 27035-2:2023)</h2>
+    <p style="color:#475569;margin-bottom:10px">Automated and manual response actions taken in accordance with the CogSOC SOAR playbook.</p>
+    <div style="overflow-x:auto">
+    <table>
+      <tr><th>Timestamp</th><th>Incident</th><th>Action</th><th>Target IP</th><th>Method</th><th>Status</th><th>Details</th></tr>
+      ${respRows}
+    </table>
+    </div>
+  </div>
+
+  <!-- 6. COMPLIANCE & RECOMMENDATIONS -->
+  <div class="section">
+    <h2>6. Compliance Assessment & Recommendations</h2>
+    <div class="two-col">
+      <div class="compliance-box">
+        <h4>NIST Cybersecurity Framework (CSF 2.0)</h4>
+        <ul>
+          <li><strong>IDENTIFY (ID):</strong> ${(agg.sensors?.buckets||[]).length} sensor(s) providing network visibility</li>
+          <li><strong>PROTECT (PR):</strong> ${blockRate}% automated blocking rate achieved</li>
+          <li><strong>DETECT (DE):</strong> AI model achieving MTTD of ${mttd}s</li>
+          <li><strong>RESPOND (RS):</strong> ${responses.length} response actions executed</li>
+          <li><strong>RECOVER (RC):</strong> ${agg.contained?.doc_count||0} incident(s) contained, ${agg.closed?.doc_count||0} closed</li>
+        </ul>
+      </div>
+      <div class="compliance-box">
+        <h4>ISO 27001:2022 / ISO 27035 Compliance</h4>
+        <ul>
+          <li><strong>A.5.24:</strong> Incident management planning — ✅ Automated</li>
+          <li><strong>A.5.25:</strong> Assessment & decision — ✅ AI-driven severity classification</li>
+          <li><strong>A.5.26:</strong> Response to incidents — ✅ SOAR automated playbooks</li>
+          <li><strong>A.5.27:</strong> Learning from incidents — ✅ Behavioral baseline learning</li>
+          <li><strong>A.8.16:</strong> Monitoring activities — ✅ Real-time network monitoring</li>
+        </ul>
+      </div>
+    </div>
+    <div class="compliance-box">
+      <h4>Recommendations</h4>
+      <ul>
+        ${critCount>0?'<li><strong style="color:#dc2626">[URGENT]</strong> Review and remediate all CRITICAL incidents immediately</li>':''}
+        ${(agg.open?.doc_count||0)>0?`<li><strong>[ACTION]</strong> ${agg.open?.doc_count} OPEN incident(s) pending investigation — assign to analysts</li>`:''}
+        ${parseFloat(blockRate)<50?'<li><strong>[IMPROVE]</strong> Auto-block rate below 50% — review detection thresholds</li>':''}
+        <li>Conduct post-incident review for all CRITICAL/HIGH incidents per NIST SP 800-61 §3.4</li>
+        <li>Update threat intelligence feeds and MITRE ATT&CK mapping quarterly</li>
+        <li>Schedule penetration testing to validate detection coverage</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 7. DISTRIBUTION -->
+  <div class="section">
+    <h2>7. Distribution & Approval</h2>
+    <table>
+      <tr><th style="width:30%">Role</th><th style="width:35%">Name</th><th style="width:20%">Date</th><th>Signature</th></tr>
+      <tr><td>CISO / Security Manager</td><td></td><td></td><td style="border-bottom:1px solid #94a3b8;min-width:120px"></td></tr>
+      <tr><td>SOC Team Lead</td><td></td><td></td><td style="border-bottom:1px solid #94a3b8"></td></tr>
+      <tr><td>Incident Commander</td><td></td><td></td><td style="border-bottom:1px solid #94a3b8"></td></tr>
+      <tr><td>IT Operations Manager</td><td></td><td></td><td style="border-bottom:1px solid #94a3b8"></td></tr>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="rpt-footer">
+    <div>
+      <div>CogSOC — AI-Driven Autonomous Defense</div>
+      <div>Generated: ${now.toISOString()}</div>
+      <div>Standards: NIST SP 800-61 Rev.2 | ISO/IEC 27035:2023 | SANS IR | MITRE ATT&CK v14</div>
+    </div>
+    <div class="stamp">CONFIDENTIAL<br>Report ${rptId}</div>
+  </div>
+
+</div></body></html>`;
+
+  // Open report in new window
+  const w = window.open('','CogSOC_Report','width=1000,height=800');
+  w.document.write(reportHTML);
+  w.document.close();
+}
+</script>
+</body>
+</html>

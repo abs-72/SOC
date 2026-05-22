@@ -1,0 +1,42 @@
+Top 10 Source IPs:
+    59.166.0.1           :      7 attacks
+    59.166.0.3           :      7 attacks
+    59.166.0.4           :      6 attacks
+    59.166.0.9           :      6 attacks
+    59.166.0.8           :      5 attacks
+    59.166.0.6           :      5 attacks
+    59.166.0.2           :      5 attacks
+    59.166.0.7           :      4 attacks
+    59.166.0.5           :      2 attacks
+    59.166.0.0           :      1 attacks
+
+
+
+[LOAD] Loading CICFlowMeter.csv...
+Rows: 3,540,241
+Labels:
+Label
+Benign            3450658
+Exploits            30951
+Fuzzers             29613
+Reconnaissance      16735
+Generic              4632
+DoS                  4467
+Shellcode            2102
+Backdoor              452
+Analysis              385
+Worms                 246
+Name: count, dtype: int64
+
+Benign : 3,450,658
+Attack : 89,583
+
+Accuracy: 97.37%
+              precision    recall  f1-score   support
+
+      BENIGN       0.97      1.00      0.99   3450658
+      ATTACK       0.07      0.00      0.01     89583
+
+    accuracy                           0.97   3540241
+   macro avg       0.52      0.50      0.50   3540241
+weighted avg       0.95      0.97      0.96   3540241

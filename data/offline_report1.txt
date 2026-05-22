@@ -1,0 +1,55 @@
+CogSOC Offline Analysis Report
+Date: 2026-04-26T00:58:33.716884
+============================================================
+Total flows   : 3,540,241
+Total attacks : 48
+
+                file      row      src_ip         dst_ip  attack  confidence severity        action                   mitre             tactic
+0   CICFlowMeter.csv     1305  59.166.0.1  149.171.126.4  ATTACK       70.46   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+1   CICFlowMeter.csv     1409  59.166.0.4  149.171.126.1  ATTACK       72.00   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+2   CICFlowMeter.csv     1490  59.166.0.1  149.171.126.3  ATTACK       70.36   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+3   CICFlowMeter.csv     1585  59.166.0.7  149.171.126.1  ATTACK       71.13   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+4   CICFlowMeter.csv     2124  59.166.0.3  149.171.126.4  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+5   CICFlowMeter.csv     2158  59.166.0.4  149.171.126.5  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+6   CICFlowMeter.csv    71769  59.166.0.8  149.171.126.2  ATTACK       71.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+7   CICFlowMeter.csv   433521  59.166.0.1  149.171.126.7  ATTACK       71.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+8   CICFlowMeter.csv   433614  59.166.0.6  149.171.126.2  ATTACK       72.06   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+9   CICFlowMeter.csv   433628  59.166.0.4  149.171.126.9  ATTACK       71.24   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+10  CICFlowMeter.csv   967180  59.166.0.4  149.171.126.3  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+11  CICFlowMeter.csv   967195  59.166.0.5  149.171.126.6  ATTACK       70.51   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+12  CICFlowMeter.csv   967225  59.166.0.2  149.171.126.0  ATTACK       71.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+13  CICFlowMeter.csv   967226  59.166.0.3  149.171.126.8  ATTACK       71.51   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+14  CICFlowMeter.csv   967239  59.166.0.2  149.171.126.1  ATTACK       71.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+15  CICFlowMeter.csv  1236335  59.166.0.9  149.171.126.7  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+16  CICFlowMeter.csv  1236574  59.166.0.6  149.171.126.1  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+17  CICFlowMeter.csv  1296756  59.166.0.3  149.171.126.2  ATTACK       74.42   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+18  CICFlowMeter.csv  1354898  59.166.0.2  149.171.126.0  ATTACK       72.40   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+19  CICFlowMeter.csv  1673365  59.166.0.9  149.171.126.4  ATTACK       71.59   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+20  CICFlowMeter.csv  1689531  59.166.0.9  149.171.126.9  ATTACK       70.51   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+21  CICFlowMeter.csv  1697979  59.166.0.4  149.171.126.6  ATTACK       72.84   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+22  CICFlowMeter.csv  2199392  59.166.0.3  149.171.126.0  ATTACK       71.19   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+23  CICFlowMeter.csv  2677447  59.166.0.9  149.171.126.1  ATTACK       72.84   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+24  CICFlowMeter.csv  2783924  59.166.0.6  149.171.126.6  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+25  CICFlowMeter.csv  2783967  59.166.0.8  149.171.126.6  ATTACK       70.51   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+26  CICFlowMeter.csv  2845555  59.166.0.1  149.171.126.0  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+27  CICFlowMeter.csv  2845580  59.166.0.8  149.171.126.7  ATTACK       70.74   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+28  CICFlowMeter.csv  2966111  59.166.0.3  149.171.126.1  ATTACK       72.13   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+29  CICFlowMeter.csv  2966209  59.166.0.0  149.171.126.3  ATTACK       71.74   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+30  CICFlowMeter.csv  2966214  59.166.0.8  149.171.126.0  ATTACK       71.63   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+31  CICFlowMeter.csv  2966255  59.166.0.7  149.171.126.6  ATTACK       72.67   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+32  CICFlowMeter.csv  2966285  59.166.0.5  149.171.126.6  ATTACK       72.17   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+33  CICFlowMeter.csv  2966320  59.166.0.1  149.171.126.9  ATTACK       74.13   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+34  CICFlowMeter.csv  2966339  59.166.0.1  149.171.126.6  ATTACK       71.18   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+35  CICFlowMeter.csv  2966395  59.166.0.2  149.171.126.9  ATTACK       71.74   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+36  CICFlowMeter.csv  2966397  59.166.0.6  149.171.126.3  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+37  CICFlowMeter.csv  2984331  59.166.0.7  149.171.126.5  ATTACK       71.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+38  CICFlowMeter.csv  2984354  59.166.0.8  149.171.126.1  ATTACK       70.01   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+39  CICFlowMeter.csv  2984817  59.166.0.1  149.171.126.6  ATTACK       70.51   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+40  CICFlowMeter.csv  3273003  59.166.0.3  149.171.126.7  ATTACK       73.90   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+41  CICFlowMeter.csv  3273034  59.166.0.7  149.171.126.8  ATTACK       71.24   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+42  CICFlowMeter.csv  3273055  59.166.0.6  149.171.126.7  ATTACK       73.17   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+43  CICFlowMeter.csv  3273082  59.166.0.9  149.171.126.0  ATTACK       72.90   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+44  CICFlowMeter.csv  3273086  59.166.0.9  149.171.126.0  ATTACK       72.40   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+45  CICFlowMeter.csv  3273122  59.166.0.3  149.171.126.6  ATTACK       74.00   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+46  CICFlowMeter.csv  3273131  59.166.0.2  149.171.126.0  ATTACK       72.67   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control
+47  CICFlowMeter.csv  3273132  59.166.0.4  149.171.126.9  ATTACK       70.51   MEDIUM  HUMAN_REVIEW  T1071 — Generic Attack  Command & Control

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard Query</title>
+</head>
+<body style="font-family: monospace; background: #1a1a1a; color: #00ff00; padding: 20px;">
+    <h1>🔍 CogSOC Dashboard Query Tester</h1>
+    <hr>
+    
+    <h2>1. Test Alerts Index</h2>
+    <button onclick="testAlertsCount()">Count Alerts</button>
+    <button onclick="testAlertsSample()">Sample Alert</button>
+    <div id="alertsResult" style="background: #0a0a0a; padding: 10px; margin-top: 10px; border-radius: 5px; min-height: 50px; white-space: pre-wrap; font-size: 12px;"></div>
+    
+    <h2>2. Test Flows Index</h2>
+    <button onclick="testFlowsCount()">Count Flows</button>
+    <button onclick="testFlowsSample()">Sample Flow</button>
+    <div id="flowsResult" style="background: #0a0a0a; padding: 10px; margin-top: 10px; border-radius: 5px; min-height: 50px; white-space: pre-wrap; font-size: 12px;"></div>
+    
+    <h2>3. Test Dashboard Queries</h2>
+    <button onclick="testLoadStats()">Test loadStats()</button>
+    <button onclick="testLoadAlerts()">Test loadAlerts()</button>
+    <div id="dashboardResult" style="background: #0a0a0a; padding: 10px; margin-top: 10px; border-radius: 5px; min-height: 50px; white-space: pre-wrap; font-size: 12px;"></div>
+
+<script>
+const ES = '/es';
+
+function log(elementId, msg) {
+    const el = document.getElementById(elementId);
+    el.textContent = (el.textContent + '\n' + msg).trim();
+    console.log(msg);
+}
+
+async function esQuery(index, body) {
+    const url = `${ES}/${index}/_search`;
+    const r = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+    });
+    return r.json();
+}
+
+async function esCount(index) {
+    const url = `${ES}/${index}/_count`;
+    const r = await fetch(url, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    });
+    return (await r.json()).count || 0;
+}
+
+async function testAlertsCount() {
+    const result = document.getElementById('alertsResult');
+    result.textContent = 'Loading...';
+    try {
+        const count = await esCount('cogsoc-alerts');
+        log('alertsResult', `✅ Alerts count: ${count}`);
+    } catch (e) {
+        log('alertsResult', `❌ Error: ${e.message}`);
+    }
+}
+
+async function testAlertsSample() {
+    const result = document.getElementById('alertsResult');
+    result.textContent = 'Loading...';
+    try {
+        const data = await esQuery('cogsoc-alerts', {size: 1, query: {match_all: {}}});
+        if (data.hits.total.value > 0) {
+            const doc = data.hits.hits[0]._source;
+            log('alertsResult', `✅ Sample Alert:\n${JSON.stringify(doc, null, 2)}`);
+        } else {
+            log('alertsResult', `⚠️  No alerts found in index`);
+        }
+    } catch (e) {
+        log('alertsResult', `❌ Error: ${e.message}`);
+    }
+}
+
+async function testFlowsCount() {
+    const result = document.getElementById('flowsResult');
+    result.textContent = 'Loading...';
+    try {
+        const count = await esCount('cogsoc-flows*');
+        log('flowsResult', `✅ Flows count: ${count}`);
+    } catch (e) {
+        log('flowsResult', `❌ Error: ${e.message}`);
+    }
+}
+
+async function testFlowsSample() {
+    const result = document.getElementById('flowsResult');
+    result.textContent = 'Loading...';
+    try {
+        const data = await esQuery('cogsoc-flows*', {size: 1, query: {match_all: {}}});
+        if (data.hits.total.value > 0) {
+            const doc = data.hits.hits[0]._source;
+            log('flowsResult', `✅ Sample Flow:\n${JSON.stringify(doc, null, 2)}`);
+        } else {
+            log('flowsResult', `⚠️  No flows found in index`);
+        }
+    } catch (e) {
+        log('flowsResult', `❌ Error: ${e.message}`);
+    }
+}
+
+async function testLoadStats() {
+    const result = document.getElementById('dashboardResult');
+    result.textContent = 'Loading...';
+    try {
+        const fq = {match_all: {}};  // No sensor filter
+        const [flowCount, alertData] = await Promise.all([
+            esCount('cogsoc-flows*'),
+            esQuery('cogsoc-alerts', { size:0, query:fq, aggs:{
+                blocked:{filter:{term:{action:'AUTO_BLOCK'}}},
+                unique_ips:{cardinality:{field:'src_ip'}},
+                severities:{terms:{field:'severity'}}
+            }})
+        ]);
+        
+        const totalAlerts = alertData?.hits?.total?.value || 0;
+        const blocked = alertData?.aggregations?.blocked?.doc_count || 0;
+        const uniqueIPs = alertData?.aggregations?.unique_ips?.value || 0;
+        
+        log('dashboardResult', `Total Flows: ${flowCount}`);
+        log('dashboardResult', `Total Alerts: ${totalAlerts}`);
+        log('dashboardResult', `Blocked: ${blocked}`);
+        log('dashboardResult', `Unique IPs: ${uniqueIPs}`);
+        log('dashboardResult', `Alert Data: ${JSON.stringify(alertData, null, 2)}`);
+    } catch (e) {
+        log('dashboardResult', `❌ Error: ${e.message}`);
+    }
+}
+
+async function testLoadAlerts() {
+    const result = document.getElementById('dashboardResult');
+    result.textContent = 'Loading...';
+    try {
+        const data = await esQuery('cogsoc-alerts', {size:10, query:{match_all:{}}, sort:[{'@timestamp':'desc'}]});
+        log('dashboardResult', `Total hits: ${data.hits.total.value}`);
+        if (data.hits.hits.length > 0) {
+            log('dashboardResult', `Sample alerts:\n${JSON.stringify(data.hits.hits.slice(0, 3), null, 2)}`);
+        } else {
+            log('dashboardResult', `⚠️  No alerts returned`);
+        }
+    } catch (e) {
+        log('dashboardResult', `❌ Error: ${e.message}`);
+    }
+}
+
+// Auto-test on load
+window.onload = () => {
+    log('alertsResult', 'Ready to test');
+    log('flowsResult', 'Ready to test');
+    log('dashboardResult', 'Ready to test');
+};
+</script>
+</body>
+</html>

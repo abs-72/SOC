@@ -1,0 +1,9 @@
+2026-05-16 04:34:19 DEBUG cic.cs.unb.ca.flow.ui.FlowMonitorPane    java.lang.UnsatisfiedLinkError: 'long com.slytechs.library.NativeLibrary.dlopen(java.lang.String)'
+2026-05-16 04:34:21 DEBUG cic.cs.unb.ca.flow.ui.FlowMonitorPane    java.lang.NoClassDefFoundError: Could not initialize class org.jnetpcap.Pcap
+2026-05-16 04:34:21 DEBUG cic.cs.unb.ca.flow.ui.FlowMonitorPane    java.lang.NoClassDefFoundError: Could not initialize class org.jnetpcap.Pcap
+2026-05-16 04:34:24 DEBUG cic.cs.unb.ca.flow.ui.FlowMonitorPane    java.lang.NoClassDefFoundError: Could not initialize class org.jnetpcap.Pcap
+2026-05-16 04:34:24 DEBUG cic.cs.unb.ca.flow.ui.FlowMonitorPane    java.lang.NoClassDefFoundError: Could not initialize class org.jnetpcap.Pcap
+2026-05-16 19:22:03 INFO  cic.cs.unb.ca.ifm.Cmd    The pcap file or folder does not exist! -> --help
+2026-05-16 19:42:15 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\data\daily\live_pcaps\live_20260516_143819.pcap
+2026-05-16 19:42:15 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\data\daily\test_output
+2026-05-16 19:42:16 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file

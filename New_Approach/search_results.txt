@@ -1,0 +1,113 @@
+C:\CogSOC\New_Approach\cogsoc_behav.py:72: # ── CICFlowMeter paths ──
+C:\CogSOC\New_Approach\cogsoc_behav.py:73: # cfm.bat  = Java CICFlowMeter CLI  (live capture: cfm.bat <iface> <out_dir>)
+C:\CogSOC\New_Approach\cogsoc_behav.py:74: # cfm      = same tool exposed on PATH
+C:\CogSOC\New_Approach\cogsoc_behav.py:75: _CFM_BAT_WSL = "/mnt/c/CogSOC/CICFlowMeter-master/build/distributions/CICFlowMeter-4.0/bin/cfm"
+C:\CogSOC\New_Approach\cogsoc_behav.py:76: _CFM_BAT_WIN = r"C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\cfm"
+C:\CogSOC\New_Approach\cogsoc_behav.py:77: CICFLOW_BIN     = _res_path(_CFM_BAT_WSL, _CFM_BAT_WIN)
+C:\CogSOC\New_Approach\cogsoc_behav.py:78: CICFLOW_BIN_DIR = os.path.dirname(CICFLOW_BIN)   # cwd needed so cfm.bat can find lib/
+C:\CogSOC\New_Approach\cogsoc_behav.py:81: "/mnt/c/CogSOC/CICFlowMeter-master/build/distributions/CICFlowMeter-4.0/bin/data/daily",
+C:\CogSOC\New_Approach\cogsoc_behav.py:82: r"C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\data\daily",
+C:\CogSOC\New_Approach\cogsoc_behav.py:85: CICFLOW_LOG         = os.path.join(CICFLOW_OUTPUT_DIR, "cicflowmeter.log")
+C:\CogSOC\New_Approach\cogsoc_behav.py:87: # Python pip cicflowmeter — fallback only, usually not present
+C:\CogSOC\New_Approach\cogsoc_behav.py:88: _python_wsl        = "/mnt/c/Users/DELL/AppData/Local/Programs/Python/Python313/Scripts/cicflowmeter.exe"
+C:\CogSOC\New_Approach\cogsoc_behav.py:89: _python_win        = r"C:\Users\DELL\AppData\Local\Programs\Python\Python313\Scripts\cicflowmeter.exe"
+C:\CogSOC\New_Approach\cogsoc_behav.py:246: """Create the CICFlowMeter output folder and live_pcaps sub-folder."""
+C:\CogSOC\New_Approach\cogsoc_behav.py:261: #  CICFlowMeter — helper that resolves which
+C:\CogSOC\New_Approach\cogsoc_behav.py:263: #    1. cfm.bat  (the real Java CLI tool)
+C:\CogSOC\New_Approach\cogsoc_behav.py:264: #    2. cfm      (same tool on PATH)
+C:\CogSOC\New_Approach\cogsoc_behav.py:265: #    3. cicflowmeter.exe  (Python pip version)
+C:\CogSOC\New_Approach\cogsoc_behav.py:268: def _resolve_cfm_binary():
+C:\CogSOC\New_Approach\cogsoc_behav.py:269: """Return (executable, needs_cmd_wrapper) for the best available CICFlowMeter binary."""
+C:\CogSOC\New_Approach\cogsoc_behav.py:270: # 1. cfm.bat at the configured path
+C:\CogSOC\New_Approach\cogsoc_behav.py:274: # 2. cfm / cfm.bat on PATH
+C:\CogSOC\New_Approach\cogsoc_behav.py:275: for name in ("cfm.bat", "cfm"):
+C:\CogSOC\New_Approach\cogsoc_behav.py:280: # 3. Python pip cicflowmeter
+C:\CogSOC\New_Approach\cogsoc_behav.py:287: def _build_cfm_live_cmd(interface, output_dir):
+C:\CogSOC\New_Approach\cogsoc_behav.py:289: Build the command list to start CICFlowMeter in LIVE capture mode.
+C:\CogSOC\New_Approach\cogsoc_behav.py:291: cfm.bat / cfm live-capture syntax:
+C:\CogSOC\New_Approach\cogsoc_behav.py:292: cfm.bat  <interface_name>  <output_folder>
+C:\CogSOC\New_Approach\cogsoc_behav.py:297: binary, needs_cmd = _resolve_cfm_binary()
+C:\CogSOC\New_Approach\cogsoc_behav.py:315: def _build_cfm_offline_cmd(input_path, output_dir):
+C:\CogSOC\New_Approach\cogsoc_behav.py:317: Build the command list to run CICFlowMeter on a PCAP file (offline mode).
+C:\CogSOC\New_Approach\cogsoc_behav.py:318: Syntax:  cfm.bat  <pcap_file>  <output_folder>
+C:\CogSOC\New_Approach\cogsoc_behav.py:320: binary, needs_cmd = _resolve_cfm_binary()
+C:\CogSOC\New_Approach\cogsoc_behav.py:342: return _build_cfm_offline_cmd(input_path, output_dir)
+C:\CogSOC\New_Approach\cogsoc_behav.py:346: """Build a bounded tshark/tcpdump capture command (used only when cfm is unavailable)."""
+C:\CogSOC\New_Approach\cogsoc_behav.py:356: def run_cicflowmeter(input_path, output_dir):
+C:\CogSOC\New_Approach\cogsoc_behav.py:357: """Run CICFlowMeter on a PCAP file and return the generated CSV file paths."""
+C:\CogSOC\New_Approach\cogsoc_behav.py:359: cmd = _build_cfm_offline_cmd(input_path, output_dir)
+C:\CogSOC\New_Approach\cogsoc_behav.py:362: "CICFlowMeter not found. Ensure cfm.bat exists at:\n"
+C:\CogSOC\New_Approach\cogsoc_behav.py:363: f"  {CICFLOW_BIN}\nor add 'cfm' to your PATH."
+C:\CogSOC\New_Approach\cogsoc_behav.py:373: print(f"[CICFlowMeter] Running offline: {' '.join(cmd)}")
+C:\CogSOC\New_Approach\cogsoc_behav.py:397: csvs = run_cicflowmeter(pcap_path, output_dir)
+C:\CogSOC\New_Approach\cogsoc_behav.py:398: print(f"[CICFlowMeter] ✅ {len(csvs)} CSV(s): {', '.join(os.path.basename(p) for p in csvs)}")
+C:\CogSOC\New_Approach\cogsoc_behav.py:427: Fallback live capture loop used when cfm.bat does NOT support live mode.
+C:\CogSOC\New_Approach\cogsoc_behav.py:428: Captures PCAP chunks with tshark/tcpdump, then converts each to CSV via cfm.
+C:\CogSOC\New_Approach\cogsoc_behav.py:476: Start CICFlowMeter live traffic capture automatically.
+C:\CogSOC\New_Approach\cogsoc_behav.py:478: Since the Java `cfm.bat` CLI does not natively support live interface capture,
+C:\CogSOC\New_Approach\cogsoc_behav.py:479: we use a PCAP-chunk loop (tshark -> cfm.bat).
+C:\CogSOC\New_Approach\cogsoc_behav.py:480: If the Python `cicflowmeter` package is installed, we can use that directly.
+C:\CogSOC\New_Approach\cogsoc_behav.py:484: # ── 1. PCAP-chunk loop (using tshark + cfm.bat) ──
+C:\CogSOC\New_Approach\cogsoc_behav.py:485: binary, _ = _resolve_cfm_binary()
+C:\CogSOC\New_Approach\cogsoc_behav.py:486: if binary and ('cfm.bat' in binary.lower() or 'cfm' in binary.lower()):
+C:\CogSOC\New_Approach\cogsoc_behav.py:488: print(f"[CAPTURE]  Starting PCAP-Chunk LIVE capture (tshark + cfm.bat)")
+C:\CogSOC\New_Approach\cogsoc_behav.py:500: # ── 2. Fallback: Python pip cicflowmeter ──
+C:\CogSOC\New_Approach\cogsoc_behav.py:507: print(f"[CAPTURE]  Starting Python CICFlowMeter LIVE capture")
+C:\CogSOC\New_Approach\cogsoc_behav.py:517: print(f"[CAPTURE] ✅ Python CICFlowMeter started  (PID {proc.pid})")
+C:\CogSOC\New_Approach\cogsoc_behav.py:520: print(f"[CAPTURE] ❌ Python CICFlowMeter failed: {e}")
+C:\CogSOC\New_Approach\cogsoc_behav.py:532: Auto-generate a Filebeat config that watches CICFlowMeter CSV output
+C:\CogSOC\New_Approach\cogsoc_behav.py:545: # Ships CICFlowMeter CSV flows → Elasticsearch cogsoc-flows
+C:\CogSOC\New_Approach\cogsoc_behav.py:553: # Skip CSV header rows (CICFlowMeter writes one header per file)
+C:\CogSOC\New_Approach\cogsoc_behav.py:557: cogsoc_source: "cicflowmeter"
+C:\CogSOC\New_Approach\cogsoc_behav.py:631: # Last resort: write to CICFlowMeter output dir
+C:\CogSOC\New_Approach\cogsoc_behav.py:658: Start Filebeat so it ships CICFlowMeter CSVs → ELK cogsoc-flows index.
+C:\CogSOC\New_Approach\cogsoc_behav.py:2748: # CICFlowMeter bidirectional flows cause the victim to appear as an
+C:\CogSOC\New_Approach\cogsoc_behav.py:3085: # victim response traffic (CICFlowMeter bidirectional).
+C:\CogSOC\New_Approach\cogsoc_behav.py:3480: print("[ERROR] Cannot run AI directly on raw PCAP. CICFlowMeter extraction is required.")
+C:\CogSOC\New_Approach\cogsoc_behav.py:3484: csv_files = run_cicflowmeter(filepath, offline_out)
+C:\CogSOC\New_Approach\cogsoc_behav.py:3485: print(f"[CICFlowMeter] Extraction complete. {len(csv_files)} CSV file(s) generated.")
+C:\CogSOC\New_Approach\cogsoc_behav.py:3488: print("[OFFLINE] CICFlowMeter-only pipeline selected. AI bypassed.")
+C:\CogSOC\New_Approach\cogsoc_behav.py:3494: print("[OFFLINE] No flows were produced by CICFlowMeter.")
+C:\CogSOC\New_Approach\dashboard.py:37: Also kills any stale tshark/cfm/filebeat processes that may hold the
+C:\CogSOC\New_Approach\dashboard.py:304: This triggers automatic CICFlowMeter capture + Filebeat pipeline.
+C:\CogSOC\New_Approach\dashboard.py:340: # Pass selected interface — critical for CICFlowMeter to know what to capture
+C:\CogSOC\New_Approach\traffic_capture.py:32: print(f"[CAPTURE] Warning: CICFlowMeter capture could not start: {e}")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:65: CICFLOW_OUTPUT_DIR = _res_path("/mnt/c/CogSOC/CICFlowMeter-master/build/distributions/CICFlowMeter-4.0/bin/data/daily", r"C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\data\daily")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:67: CICFLOW_LOG = os.path.join(CICFLOW_OUTPUT_DIR, "cicflowmeter.log")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:68: CICFLOW_BIN = _res_path("/mnt/c/CogSOC/CICFlowMeter-master/build/distributions/CICFlowMeter-4.0/bin/cfm.bat", r"C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\cfm.bat")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:70: _python_wsl = "/mnt/c/Users/DELL/AppData/Local/Programs/Python/Python313/Scripts/cicflowmeter.exe"
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:71: _python_win = r"C:\Users\DELL\AppData\Local\Programs\Python\Python313\Scripts\cicflowmeter.exe"
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:176: """Ensure the live CICFlowMeter output folder exists."""
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:191: """Return the offline CICFlowMeter command for a pcap file/folder."""
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:195: # Python cicflowmeter expects the exact output CSV file, not a directory
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:204: cfm = shutil.which("cfm") or shutil.which("cicflowmeter") or shutil.which("cfm.bat")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:205: if cfm:
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:206: return [cfm, input_path, output_dir]
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:227: def run_cicflowmeter(input_path, output_dir):
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:228: """Run CICFlowMeter and return generated CSV files."""
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:232: raise RuntimeError("CICFlowMeter command not found. Update CICFLOW_BIN or PATH.")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:249: print(f"[CICFlowMeter] Running: {' '.join(cmd_to_run)}")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:263: """Capture short PCAP chunks and convert each chunk to CICFlowMeter CSV."""
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:290: csvs = run_cicflowmeter(pcap_path, CICFLOW_OUTPUT_DIR)
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:291: print(f"[CICFlowMeter] Generated {len(csvs)} CSV file(s): {', '.join(os.path.basename(p) for p in csvs)}")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:300: """Start automated live capture using Python CICFlowMeter in the background."""
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:307: print(f"[CAPTURE] Starting Python CICFlowMeter: {' '.join(cmd)}")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:315: print(f"[CAPTURE] Error starting Python CICFlowMeter: {e}")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:319: print("[CAPTURE] WARNING: Python cicflowmeter.exe not found. Falling back to PCAP chunk loop.")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:353: cogsoc_source: cicflowmeter
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:2381: # CICFlowMeter bidirectional flows cause the victim to appear as an
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:2682: # victim response traffic (CICFlowMeter bidirectional).
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:3059: print("[ERROR] Cannot run AI directly on raw PCAP. CICFlowMeter extraction is required.")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:3063: csv_files = run_cicflowmeter(filepath, offline_out)
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:3064: print(f"[CICFlowMeter] Extraction complete. {len(csv_files)} CSV file(s) generated.")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:3067: print("[OFFLINE] CICFlowMeter-only pipeline selected. AI bypassed.")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:3073: print("[OFFLINE] No flows were produced by CICFlowMeter.")
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:3243: # Live mode: start CICFlowMeter + Filebeat pipeline automatically
+C:\CogSOC\New_Approach\archive\cogsoc_behav.py:3249: print(f"[CAPTURE] Warning: CICFlowMeter capture could not start: {e}")
+C:\CogSOC\New_Approach\archive\dashboard.py:423: """Write a Filebeat config that ships CICFlowMeter CSVs → cogsoc-flows index in ELK."""
+C:\CogSOC\New_Approach\archive\dashboard.py:424: # Resolve CICFlowMeter output directory (mirrors cogsoc_behav.py logic)
+C:\CogSOC\New_Approach\archive\dashboard.py:425: cicflow_win  = r"C:\CogSOC\CICFlowMeter-master\build\distributions\CICFlowMeter-4.0\bin\data\daily"
+C:\CogSOC\New_Approach\archive\dashboard.py:426: cicflow_wsl  = "/mnt/c/CogSOC/CICFlowMeter-master/build/distributions/CICFlowMeter-4.0/bin/data/daily"
+C:\CogSOC\New_Approach\archive\dashboard.py:443: cogsoc_source: cicflowmeter
+C:\CogSOC\New_Approach\archive\dashboard.py:446: # Skip the CSV header line that CICFlowMeter writes
+C:\CogSOC\TestWebsite\traffic_generator.py:471: can classify them at the network flow level via CICFlowMeter.{Colors.RESET}

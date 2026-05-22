@@ -1,0 +1,20 @@
+{"timestamp": "2026-05-12T20:40:18.239899+00:00", "src_ip": "192.168.100.176", "incident_id": "INC-20260513-0002", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-12T20:40:24.037262+00:00", "src_ip": "192.168.100.18", "incident_id": "INC-20260513-0001", "attack_type": "High Volume Attack", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-12T20:48:02.190365+00:00", "src_ip": "192.168.100.176", "incident_id": "INC-20260513-0003", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-12T21:02:11.493583+00:00", "src_ip": "192.168.100.176", "incident_id": "INC-20260513-0004", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-12T21:27:19.905198+00:00", "src_ip": "192.168.100.176", "incident_id": "INC-20260513-0002", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-12T21:27:22.931702+00:00", "src_ip": "192.168.100.18", "incident_id": "INC-20260513-0001", "attack_type": "High Volume Attack", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-12T21:35:46.615122+00:00", "src_ip": "192.168.100.176", "incident_id": "INC-20260513-0003", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-13T15:04:47.022689+00:00", "src_ip": "192.168.100.79", "incident_id": "INC-20260513-0001", "attack_type": "Advanced Attack (AI Detected)", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-13T15:45:07.142212+00:00", "src_ip": "192.168.100.79", "incident_id": "INC-20260513-0001", "attack_type": "Advanced Attack (AI Detected)", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-13T16:08:30.985780+00:00", "src_ip": "192.168.100.79", "incident_id": "INC-20260513-0001", "attack_type": "High Volume Attack", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-13T16:42:28.264781+00:00", "src_ip": "192.168.100.179", "incident_id": "INC-20260513-0003", "attack_type": "High Volume Attack", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-13T16:48:01.398300+00:00", "src_ip": "192.168.100.179", "incident_id": "INC-20260513-0004", "attack_type": "High Volume Attack", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-13T17:03:49.018756+00:00", "src_ip": "134.221.96.5", "incident_id": "INC-20260513-0002", "attack_type": "Advanced Attack (AI Detected)", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-16T17:12:28.129731+00:00", "src_ip": "192.168.100.79", "incident_id": "INC-20260516-0002", "attack_type": "Advanced Attack (AI Detected)", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-18T12:57:36.455800+00:00", "src_ip": "192.168.100.179", "incident_id": "INC-20260518-0001", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-18T13:30:22.208848+00:00", "src_ip": "192.168.100.179", "incident_id": "INC-20260518-0001", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-18T15:06:33.465421+00:00", "src_ip": "192.168.100.18", "incident_id": "INC-20260518-0001", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-18T19:26:25.958727+00:00", "src_ip": "192.168.100.101", "incident_id": "INC-20260519-0003", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-21T06:43:28.145653+00:00", "src_ip": "192.168.100.101", "incident_id": "INC-20260521-0001", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}
+{"timestamp": "2026-05-22T12:46:55.405414+00:00", "src_ip": "192.168.100.101", "incident_id": "INC-20260522-0001", "attack_type": "DoS SYN Flood", "detail": "Capture network state for forensics"}

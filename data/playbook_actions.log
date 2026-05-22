@@ -1,0 +1,67 @@
+2026-05-13T01:40:18.166769 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.176 | INC=INC-20260513-0002
+2026-05-13T01:40:23.952824 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.18 | INC=INC-20260513-0001
+2026-05-13T01:40:24.187305 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.18 | INC=INC-20260513-0001
+2026-05-13T01:48:02.179004 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.176 | INC=INC-20260513-0003
+2026-05-13T02:02:11.462741 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.176 | INC=INC-20260513-0004
+2026-05-13T02:27:19.838006 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.176 | INC=INC-20260513-0002
+2026-05-13T02:27:22.877800 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.18 | INC=INC-20260513-0001
+2026-05-13T02:27:22.960504 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.18 | INC=INC-20260513-0001
+2026-05-13T02:35:46.579223 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.176 | INC=INC-20260513-0003
+2026-05-13T20:04:46.445212 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.79 | INC=INC-20260513-0001
+2026-05-13T20:04:47.113079 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.79 | INC=INC-20260513-0001
+2026-05-13T20:45:06.774357 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.79 | INC=INC-20260513-0001
+2026-05-13T20:45:07.212846 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.79 | INC=INC-20260513-0001
+2026-05-13T21:08:30.599581 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.79 | INC=INC-20260513-0001
+2026-05-13T21:42:27.908217 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.179 | INC=INC-20260513-0003
+2026-05-13T21:42:28.314485 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260513-0003
+2026-05-13T21:48:01.391997 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.179 | INC=INC-20260513-0004
+2026-05-13T21:48:12.235679 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260513-0004
+2026-05-13T21:49:50.469342 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260513-0001
+2026-05-13T21:49:50.701523 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260513-0001
+2026-05-13T22:03:48.566572 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=134.221.96.5 | INC=INC-20260513-0002
+2026-05-13T22:11:41.879671 | [PLAYBOOK] Unclassified attack detected by AI model | IP=134.221.96.5 | INC=INC-20260513-0002
+2026-05-13T22:27:39.018199 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260513-0001
+2026-05-13T22:27:40.283803 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260513-0001
+2026-05-14T01:06:01.155125 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:06:02.956235 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:28:24.647083 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:28:24.826702 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:38:40.377326 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:38:40.434695 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:45:07.429945 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:45:07.492980 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:54:26.329755 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-14T01:54:26.391227 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260514-0001
+2026-05-16T01:27:42.205934 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T01:27:43.023240 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T01:37:53.351672 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T01:37:53.386829 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T01:52:16.006210 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T01:52:16.164872 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T02:17:24.906472 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T02:17:24.941060 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T02:59:29.204706 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T02:59:29.284217 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T03:10:07.629430 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T03:10:07.676541 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T03:15:36.625054 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T03:15:36.855378 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T03:19:36.708074 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T03:19:36.862380 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T04:00:06.889666 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T04:00:06.951749 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T18:24:26.524829 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T18:24:26.666022 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0001
+2026-05-16T22:12:26.853945 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.79 | INC=INC-20260516-0002
+2026-05-16T22:12:28.403322 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.79 | INC=INC-20260516-0002
+2026-05-16T22:14:48.861406 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.179 | INC=INC-20260516-0003
+2026-05-16T22:14:48.959611 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.179 | INC=INC-20260516-0003
+2026-05-18T17:57:36.071292 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.179 | INC=INC-20260518-0001
+2026-05-18T18:30:20.572635 | [PLAYBOOK] DDoS attack detected � initiating mitigation | IP=192.168.100.179 | INC=INC-20260518-0001
+2026-05-18T20:06:13.216769 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.18 | INC=INC-20260518-0001
+2026-05-18T20:07:52.173946 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.18 | INC=INC-20260518-0001
+2026-05-19T00:23:10.245611 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.101 | INC=INC-20260519-0003
+2026-05-19T00:37:31.619558 | [PLAYBOOK] Reconnaissance activity detected | IP=192.168.100.101 | INC=INC-20260519-0004
+2026-05-21T11:43:26.541659 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.101 | INC=INC-20260521-0001
+2026-05-22T17:46:49.290187 | [PLAYBOOK] DDoS attack detected — initiating mitigation | IP=192.168.100.101 | INC=INC-20260522-0001
+2026-05-22T17:46:56.841369 | [PLAYBOOK] Unclassified attack detected by AI model | IP=192.168.100.101 | INC=INC-20260522-0001

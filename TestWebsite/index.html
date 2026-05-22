@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureCorp — Enterprise Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="/" class="nav-brand">
+                <div class="brand-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <span>Secure<strong>Corp</strong></span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/login" class="nav-link">Login</a>
+                <a href="/search" class="nav-link">Search</a>
+                <a href="/comments" class="nav-link">Feedback</a>
+                <a href="/admin" class="nav-link nav-link-admin">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">CogSOC AI Test Target</div>
+            <h1 class="hero-title">
+                Enterprise Security
+                <span class="gradient-text">Testing Portal</span>
+            </h1>
+            <p class="hero-desc">
+                This web application serves as a controlled test target for the CogSOC AI intrusion detection system.
+                It provides endpoints for login, search, and user feedback — enabling realistic network traffic pattern generation
+                for AI model validation.
+            </p>
+            <div class="hero-actions">
+                <a href="/login" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    Employee Login
+                </a>
+                <a href="/search" class="btn btn-outline">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    Search Database
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon" style="--clr: #00eeff;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statUsers">2</div>
+                    <div class="stat-label">Registered Users</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="--clr: #a855f7;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statUptime">Active</div>
+                    <div class="stat-label">Server Status</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="--clr: #f43f5e;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">CogSOC</div>
+                    <div class="stat-label">AI Monitoring</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="--clr: #22c55e;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statTraffic">Live</div>
+                    <div class="stat-label">Traffic Capture</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section class="section" id="services">
+        <h2 class="section-title">Portal Services</h2>
+        <p class="section-desc">Access enterprise resources through the portals below. All traffic is monitored by CogSOC AI.</p>
+        <div class="services-grid">
+            <a href="/login" class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #0ea5e9, #6366f1);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                </div>
+                <h3>Authentication Portal</h3>
+                <p>Secure employee login with credential validation. Test brute-force detection by sending rapid login attempts.</p>
+                <span class="service-tag">POST /api/login</span>
+            </a>
+            <a href="/search" class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #a855f7, #ec4899);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                </div>
+                <h3>Database Search</h3>
+                <p>Full-text search across company knowledge base. Generates query traffic for AI pattern analysis.</p>
+                <span class="service-tag">GET /api/search?q=</span>
+            </a>
+            <a href="/comments" class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #f43f5e, #f97316);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                </div>
+                <h3>User Feedback</h3>
+                <p>Submit comments and feedback. Input goes through server processing — generates POST traffic patterns.</p>
+                <span class="service-tag">POST /api/comment</span>
+            </a>
+            <a href="/admin" class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #22c55e, #14b8a6);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h3>Admin Panel</h3>
+                <p>System administration dashboard. Directory scanning tools will probe for this endpoint.</p>
+                <span class="service-tag">GET /admin</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- CogSOC Integration Notice -->
+    <section class="section notice-section">
+        <div class="notice-card">
+            <div class="notice-icon">🛡️</div>
+            <div class="notice-content">
+                <h3>CogSOC AI Monitoring Active</h3>
+                <p>All traffic to this server is captured by CICFlowMeter and analyzed by the CogSOC behavioral AI engine.
+                   Attack patterns such as rapid login attempts, port scanning, and high-volume requests are detected
+                   at the <strong>network flow level</strong> — independent of application-layer responses.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SecureCorp — CogSOC AI Test Target &middot; For security research only</p>
+    </footer>
+
+    <script>
+        // Fetch live stats
+        async function refreshStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('statTraffic').textContent = data.total_logins + data.total_searches + ' reqs';
+            } catch(e) {}
+        }
+        refreshStats();
+        setInterval(refreshStats, 5000);
+    </script>
+</body>
+</html>

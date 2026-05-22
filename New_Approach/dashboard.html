@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogSOC — AI Security Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--card:#1a2236;--border:#1e2d4a;
+  --text:#e2e8f0;--muted:#64748b;--accent:#3b82f6;--accent2:#8b5cf6;
+  --green:#10b981;--red:#ef4444;--orange:#f59e0b;--yellow:#eab308;
+  --cyan:#06b6d4;--pink:#ec4899;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.top-bar{
+  background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);
+  border-bottom:1px solid var(--border);padding:16px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo span{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+.status{display:flex;align-items:center;gap:16px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  animation:pulse 2s infinite;box-shadow:0 0 8px var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.refresh-info{font-size:12px;color:var(--muted)}
+@keyframes flashNew{0%{background:rgba(59,130,246,.25)}100%{background:transparent}}
+.flash-new{animation:flashNew 1.5s ease-out}
+.countdown-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan));z-index:9999;transition:width .1s linear}
+.new-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;animation:pulse 1s infinite}
+.main{padding:24px 32px;max-width:1600px;margin:0 auto}
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px 24px;position:relative;overflow:hidden;transition:all .3s;
+  box-shadow: 0 0 10px rgba(59,130,246,0.05);
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow: 0 0 20px rgba(59,130,246,0.3), 0 0 40px rgba(59,130,246,0.1); border-color:var(--accent);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.stat-card:nth-child(1)::before{background:linear-gradient(90deg,var(--accent),var(--cyan))}
+.stat-card:nth-child(2)::before{background:linear-gradient(90deg,var(--red),var(--orange))}
+.stat-card:nth-child(3)::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.stat-card:nth-child(4)::before{background:linear-gradient(90deg,var(--orange),var(--yellow))}
+.stat-card:nth-child(5)::before{background:linear-gradient(90deg,var(--accent2),var(--pink))}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.stat-value{font-size:32px;font-weight:800;margin:8px 0 4px;letter-spacing:-1px}
+.stat-sub{font-size:12px;color:var(--muted)}
+.stat-card:nth-child(1) .stat-value{color:var(--accent)}
+.stat-card:nth-child(2) .stat-value{color:var(--red)}
+.stat-card:nth-child(3) .stat-value{color:var(--green)}
+.stat-card:nth-child(4) .stat-value{color:var(--orange)}
+.stat-card:nth-child(5) .stat-value{color:var(--accent2)}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:24px;position:relative;transition:all .3s;
+  box-shadow: 0 0 10px rgba(59,130,246,0.05);
+}
+.chart-card:hover{box-shadow: 0 0 20px rgba(59,130,246,0.15); border-color:rgba(59,130,246,0.4);}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.chart-title::before{content:'';width:4px;height:16px;border-radius:2px;background:var(--accent)}
+.chart-wrap{position:relative;height:280px}
+.three-col{grid-template-columns:1fr 1fr 1fr}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px;box-shadow: 0 0 10px rgba(59,130,246,0.05);transition:all .3s;}
+.table-card:hover{box-shadow: 0 0 20px rgba(59,130,246,0.15); border-color:rgba(59,130,246,0.4);}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--muted);font-weight:600;text-transform:uppercase;
+  font-size:11px;letter-spacing:1px;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid rgba(30,45,74,.4)}
+tr:hover td{background:rgba(59,130,246,.05)}
+.sev-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.sev-CRITICAL{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.sev-HIGH{background:rgba(245,158,11,.15);color:var(--orange);border:1px solid rgba(245,158,11,.3)}
+.sev-MEDIUM{background:rgba(234,179,8,.15);color:var(--yellow);border:1px solid rgba(234,179,8,.3)}
+.sev-LOW{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.action-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.action-AUTO_BLOCK{background:rgba(239,68,68,.12);color:var(--red)}
+.action-MANUAL_BLOCK{background:rgba(6,182,212,.12);color:var(--cyan)}
+.action-HUMAN_REVIEW{background:rgba(245,158,11,.12);color:var(--orange)}
+.action-GRACE_PERIOD{background:rgba(139,92,246,.12);color:var(--accent2)}
+.btn-block{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;padding:5px 14px;
+  border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;
+  display:inline-flex;align-items:center;gap:4px;letter-spacing:.3px}
+.btn-block:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(239,68,68,.4)}
+.btn-block:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-blocked{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3);
+  padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600}
+.no-data{text-align:center;padding:60px;color:var(--muted);font-size:14px}
+.mitre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.mitre-item{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);
+  border-radius:10px;padding:12px 14px;transition:transform .15s}
+.mitre-item:hover{transform:scale(1.02)}
+.mitre-id{font-size:12px;font-weight:700;color:var(--accent2)}
+.mitre-name{font-size:12px;color:var(--text);margin-top:4px}
+.mitre-count{font-size:20px;font-weight:800;color:var(--text);margin-top:6px}
+.mitre-tactic{font-size:10px;color:var(--muted);margin-top:2px}
+@media(max-width:1200px){.stats-row{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}}
+@media(max-width:768px){.stats-row{grid-template-columns:1fr 1fr}.three-col{grid-template-columns:1fr}}
+.loading{display:flex;align-items:center;justify-content:center;height:200px;color:var(--muted)}
+.spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .8s linear infinite;margin-right:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sensor-filter{display:flex;align-items:center;gap:10px}
+.sensor-filter label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.sensor-filter select{background:var(--card);color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:6px 12px;font-size:13px;font-family:'Inter',sans-serif;
+  cursor:pointer;outline:none;min-width:160px}
+.sensor-filter select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(59,130,246,.2)}
+.sensor-badge{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;
+  background:rgba(6,182,212,.12);color:var(--cyan);border:1px solid rgba(6,182,212,.25)}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="logo">
+    <img src="logo.png" alt="CogSOC" style="height:44px;border-radius:8px">
+    <div><h1>CogSOC Dashboard</h1><span>AI-Driven Autonomous Defense</span></div>
+  </div>
+  <div style="display:flex;gap:4px;background:rgba(255,255,255,.05);padding:4px;border-radius:10px">
+    <a href="dashboard.html" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;background:var(--accent);color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(59,130,246,.4)">AI Analysis</a>
+    <a href="soar.html" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none">SOAR</a>
+  </div>
+  <div class="status">
+    <div class="sensor-filter">
+      <label>Sensor:</label>
+      <select id="sensorFilter" onchange="refreshAll()">
+        <option value="">All Sensors</option>
+      </select>
+    </div>
+    <div class="status-dot"></div>
+    <span class="refresh-info" id="lastUpdate">Loading...</span>
+    <div id="userInfo" style="display:flex;align-items:center;gap:10px;margin-left:16px;padding-left:16px;border-left:1px solid var(--border)">
+      <span id="userName" style="font-size:12px;color:var(--muted);font-weight:600"></span>
+      <a href="/auth/logout" id="logoutBtn" style="padding:6px 14px;background:rgba(239,68,68,.12);color:#ef4444;
+        border:1px solid rgba(239,68,68,.25);border-radius:8px;font-size:11px;font-weight:700;
+        text-decoration:none;transition:all .2s;cursor:pointer"
+        onmouseover="this.style.background='rgba(239,68,68,.25)'"
+        onmouseout="this.style.background='rgba(239,68,68,.12)'">Logout</a>
+    </div>
+  </div>
+</div>
+<script>
+// ── Auth Check: redirect to login if not authenticated ──
+(async function checkAuth() {
+    const token = document.cookie.split('; ').find(c => c.startsWith('cogsoc_token='));
+    if (!token) { window.location.href = '/login.html'; return; }
+    try {
+        // Add timestamp to force Edge/Chrome to bypass old caches
+        const resp = await fetch('/auth/verify?t=' + Date.now(), {
+            headers: { 'Authorization': token.split('=')[1] }
+        });
+        const data = await resp.json();
+        if (!data.valid) { window.location.href = '/login.html'; return; }
+        document.getElementById('userName').textContent = data.full_name || data.username;
+    } catch (e) { window.location.href = '/login.html'; }
+})();
+</script>
+
+<div class="main">
+  <!-- Stats Cards -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Flows</div>
+      <div class="stat-value" id="totalFlows">—</div>
+      <div class="stat-sub" id="flowsSub">analyzed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Alerts</div>
+      <div class="stat-value" id="totalAlerts">—</div>
+      <div class="stat-sub" id="alertsSub">detected threats</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Normal Traffic</div>
+      <div class="stat-value" id="normalTraffic">—</div>
+      <div class="stat-sub" id="normalSub">benign flows</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Blocked IPs</div>
+      <div class="stat-value" id="blockedCount">—</div>
+      <div class="stat-sub">auto-blocked</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Unique Attackers</div>
+      <div class="stat-value" id="uniqueAttackers">—</div>
+      <div class="stat-sub">source IPs</div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1: Timeline + Severity -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Alert Timeline</div>
+      <div class="chart-wrap"><canvas id="timelineChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Severity Distribution</div>
+      <div class="chart-wrap"><canvas id="severityChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2: Attack Types + Top Attackers + Actions -->
+  <div class="charts-row three-col">
+    <div class="chart-card">
+      <div class="chart-title">Attack Types</div>
+      <div class="chart-wrap"><canvas id="attackTypeChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Top Threat Sources</div>
+      <div class="chart-wrap"><canvas id="topAttackersChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Response Actions</div>
+      <div class="chart-wrap"><canvas id="actionsChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Sensor Distribution -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Traffic by Sensor</div>
+      <div class="chart-wrap"><canvas id="sensorChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Alerts by Sensor</div>
+      <div class="chart-wrap"><canvas id="sensorAlertChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- MITRE ATT&CK -->
+  <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-title">MITRE ATT&CK Coverage</div>
+    <div class="mitre-grid" id="mitreGrid"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+  </div>
+
+  <!-- Recent Alerts Table -->
+  <div class="table-card">
+    <div class="chart-title">Recent Alerts</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th>Processed Time</th><th>Attack Time</th><th>Sensor</th><th>Source IP</th><th>Destination</th><th>Attack Type</th>
+          <th>Confidence</th><th>Severity</th><th>Action</th><th>MITRE</th><th>Block</th><th>Feedback</th>
+        </tr></thead>
+        <tbody id="alertsTable"><tr><td colspan="10" class="no-data">Loading alerts...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const ES = '/es';
+const ALERTS = 'cogsoc-alerts';
+const FLOWS = 'cogsoc-flows';
+const REFRESH = 5000;
+let _lastAlertCount = 0;
+let _countdownTimer = null;
+let _soundEnabled = false;
+
+const COLORS = {
+  CRITICAL:'#ef4444', HIGH:'#f59e0b', MEDIUM:'#eab308', LOW:'#10b981',
+  accent:'#3b82f6', accent2:'#8b5cf6', cyan:'#06b6d4', pink:'#ec4899',
+  green:'#10b981', orange:'#f59e0b', red:'#ef4444'
+};
+const CHART_COLORS = ['#3b82f6','#8b5cf6','#06b6d4','#ec4899','#10b981','#f59e0b','#ef4444','#6366f1','#14b8a6','#f43f5e'];
+
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = 'rgba(30,45,74,0.5)';
+Chart.defaults.font.family = 'Inter';
+
+let charts = {};
+let sensorsLoaded = false;
+
+function getFilter() {
+  const sel = document.getElementById('sensorFilter');
+  return sel ? sel.value : '';
+}
+function sensorQuery() {
+  const s = getFilter();
+  return s ? {term:{'sensor_name.keyword':s}} : {match_all:{}};
+}
+
+async function esQuery(index, body) {
+  try {
+    const r = await fetch(`${ES}/${index}/_search`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    return await r.json();
+  } catch(e) { console.error('ES error:', e); return null; }
+}
+
+async function esCount(index, query) {
+  try {
+    const q = query ? JSON.stringify({query}) : '{"query":{"match_all":{}}}';
+    const r = await fetch(`${ES}/${index}/_count`, {method:'POST',
+      headers:{'Content-Type':'application/json'}, body:q});
+    return (await r.json()).count || 0;
+  } catch(e) { return 0; }
+}
+
+function destroyChart(id) { if(charts[id]){charts[id].destroy(); delete charts[id];} }
+
+// ─── LOAD SENSOR LIST ───
+async function loadSensors() {
+  if(sensorsLoaded) return;
+  const data = await esQuery(ALERTS, {size:0, aggs:{sensors:{terms:{field:'sensor_name.keyword',size:50}}}});
+  if(!data) return;
+  const sel = document.getElementById('sensorFilter');
+  const buckets = data.aggregations?.sensors?.buckets || [];
+  buckets.forEach(b => {
+    if(!sel.querySelector(`option[value="${b.key}"]`)) {
+      const opt = document.createElement('option');
+      opt.value = b.key; opt.textContent = `${b.key} (${b.doc_count.toLocaleString()})`;
+      sel.appendChild(opt);
+    }
+  });
+  sensorsLoaded = true;
+}
+
+// ─── STAT CARDS ───
+async function loadStats() {
+  const fq = sensorQuery();
+  const [flowCount, alertData] = await Promise.all([
+    esCount(FLOWS + '*'),
+    esQuery(ALERTS, { size:0, query:fq, aggs:{
+      blocked:{filter:{term:{'action.keyword':'AUTO_BLOCK'}}},
+      unique_ips:{cardinality:{field:'src_ip.keyword'}},
+      severities:{terms:{field:'severity.keyword'}}
+    }})
+  ]);
+
+  const totalAlerts = alertData?.hits?.total?.value || 0;
+  const blocked = alertData?.aggregations?.blocked?.doc_count || 0;
+  const uniqueIPs = alertData?.aggregations?.unique_ips?.value || 0;
+  const normal = Math.max(0, flowCount - totalAlerts);
+
+  document.getElementById('totalFlows').textContent = flowCount.toLocaleString();
+  document.getElementById('totalAlerts').textContent = totalAlerts.toLocaleString();
+  document.getElementById('normalTraffic').textContent = normal.toLocaleString();
+  document.getElementById('normalSub').textContent = `${flowCount>0?((normal/flowCount)*100).toFixed(1):0}% of traffic`;
+  document.getElementById('blockedCount').textContent = blocked.toLocaleString();
+  document.getElementById('uniqueAttackers').textContent = uniqueIPs.toLocaleString();
+}
+
+// ─── ALERT TIMELINE ───
+async function loadTimeline() {
+  const data = await esQuery(ALERTS, { size:0, query:sensorQuery(), aggs:{
+    timeline:{date_histogram:{field:'@timestamp', calendar_interval:'minute'},
+      aggs:{by_sev:{terms:{field:'severity.keyword'}}}
+    }
+  }});
+  if(!data) return;
+  const buckets = data.aggregations?.timeline?.buckets || [];
+  const labels = buckets.map(b => new Date(b.key_as_string).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  const sevs = ['CRITICAL','HIGH','MEDIUM','LOW'];
+  const datasets = sevs.map((s,i) => ({
+    label:s, data:buckets.map(b=>{
+      const sv = b.by_sev?.buckets?.find(x=>x.key===s);return sv?sv.doc_count:0;
+    }),
+    backgroundColor: COLORS[s]+'99', borderColor: COLORS[s], borderWidth:1,
+    fill:true, tension:.3, pointRadius:0
+  }));
+
+  destroyChart('timeline');
+  charts.timeline = new Chart(document.getElementById('timelineChart'),{
+    type:'line', data:{labels, datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{boxWidth:10,padding:12,font:{size:11}}}},
+      scales:{
+        x:{title:{display:true,text:'Time',color:'#64748b',font:{size:11}},ticks:{maxTicksLimit:12,font:{size:10}}},
+        y:{title:{display:true,text:'Alert Count',color:'#64748b',font:{size:11}},beginAtZero:true,ticks:{font:{size:10}}}
+      },
+      interaction:{intersect:false,mode:'index'}
+    }
+  });
+}
+
+// ─── SEVERITY DONUT ───
+async function loadSeverity() {
+  const data = await esQuery(ALERTS, {size:0, query:sensorQuery(), aggs:{sev:{terms:{field:'severity.keyword'}}}});
+  if(!data) return;
+  const buckets = data.aggregations?.sev?.buckets || [];
+  const labels = buckets.map(b=>b.key);
+  const values = buckets.map(b=>b.doc_count);
+  const colors = labels.map(l=>COLORS[l]||'#64748b');
+
+  destroyChart('severity');
+  charts.severity = new Chart(document.getElementById('severityChart'),{
+    type:'doughnut', data:{labels, datasets:[{data:values, backgroundColor:colors, borderWidth:0, hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false, cutout:'65%',
+      plugins:{legend:{position:'bottom',labels:{padding:14,boxWidth:12,font:{size:11}}}}}
+  });
+}
+
+// ─── ATTACK TYPES ───
+async function loadAttackTypes() {
+  const data = await esQuery(ALERTS, {size:0, query:sensorQuery(), aggs:{types:{terms:{field:'attack_type.keyword',size:10}}}});
+  if(!data) return;
+  const buckets = data.aggregations?.types?.buckets || [];
+  const labels = buckets.map(b=>b.key);
+  const values = buckets.map(b=>b.doc_count);
+
+  destroyChart('attackType');
+  charts.attackType = new Chart(document.getElementById('attackTypeChart'),{
+    type:'bar', data:{labels, datasets:[{data:values,
+      backgroundColor:CHART_COLORS.map(c=>c+'cc'), borderColor:CHART_COLORS, borderWidth:1, borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false, indexAxis:'y',
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{title:{display:true,text:'Alert Count',color:'#64748b',font:{size:11}},ticks:{font:{size:10}}},
+        y:{title:{display:true,text:'Attack Category',color:'#64748b',font:{size:11}},ticks:{font:{size:11}}}
+      }}
+  });
+}
+
+// ─── TOP ATTACKERS ───
+async function loadTopAttackers() {
+  const data = await esQuery(ALERTS, {size:0, query:sensorQuery(), aggs:{ips:{terms:{field:'src_ip.keyword',size:8}}}});
+  if(!data) return;
+  const buckets = data.aggregations?.ips?.buckets || [];
+  const labels = buckets.map(b=>b.key);
+  const values = buckets.map(b=>b.doc_count);
+
+  destroyChart('topAttackers');
+  charts.topAttackers = new Chart(document.getElementById('topAttackersChart'),{
+    type:'bar', data:{labels, datasets:[{data:values,
+      backgroundColor:CHART_COLORS.map(c=>c+'cc'), borderColor:CHART_COLORS, borderWidth:1, borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false, indexAxis:'y',
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{title:{display:true,text:'Incident Count',color:'#64748b',font:{size:11}},ticks:{font:{size:10}}},
+        y:{title:{display:true,text:'Source IP',color:'#64748b',font:{size:11}},ticks:{font:{size:11}}}
+      }}
+  });
+}
+
+// ─── RESPONSE ACTIONS ───
+async function loadActions() {
+  const data = await esQuery(ALERTS, {size:0, query:sensorQuery(), aggs:{act:{terms:{field:'action.keyword'}}}});
+  if(!data) return;
+  const buckets = data.aggregations?.act?.buckets || [];
+  const labels = buckets.map(b=>b.key==='AUTO_BLOCK'?'🔴 Auto Blocked':'🟡 Human Review');
+  const values = buckets.map(b=>b.doc_count);
+  const colors = buckets.map(b=>b.key==='AUTO_BLOCK'?COLORS.red+'cc':COLORS.orange+'cc');
+
+  destroyChart('actions');
+  charts.actions = new Chart(document.getElementById('actionsChart'),{
+    type:'doughnut', data:{labels, datasets:[{data:values, backgroundColor:colors, borderWidth:0, hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false, cutout:'60%',
+      plugins:{legend:{position:'bottom',labels:{padding:14,boxWidth:12,font:{size:11}}}}}
+  });
+}
+
+// ─── MITRE ATT&CK ───
+async function loadMitre() {
+  const data = await esQuery(ALERTS, {size:0, query:sensorQuery(), aggs:{
+    mitre:{terms:{field:'mitre_technique.keyword',size:20},
+      aggs:{tactic:{terms:{field:'mitre_tactic.keyword',size:1}}, name:{terms:{field:'mitre_name.keyword',size:1}}}
+    }
+  }});
+  const grid = document.getElementById('mitreGrid');
+  if(!data){grid.innerHTML='<div class="no-data">No data</div>';return;}
+  const buckets = data.aggregations?.mitre?.buckets || [];
+  if(!buckets.length){grid.innerHTML='<div class="no-data">No MITRE data yet</div>';return;}
+
+  grid.innerHTML = buckets.map(b=>{
+    const tactic = b.tactic?.buckets?.[0]?.key||'Unknown';
+    const name = b.name?.buckets?.[0]?.key||'Unknown';
+    return `<div class="mitre-item">
+      <div class="mitre-id">${b.key}</div>
+      <div class="mitre-name">${name}</div>
+      <div class="mitre-count">${b.doc_count.toLocaleString()}</div>
+      <div class="mitre-tactic">${tactic}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── RECENT ALERTS TABLE ───
+async function loadAlerts() {
+  const data = await esQuery(ALERTS, {size:50, query:sensorQuery(), sort:[{'@timestamp':'desc'}]});
+  const tbody = document.getElementById('alertsTable');
+  if(!data||!data.hits?.hits?.length){
+    tbody.innerHTML='<tr><td colspan="10" class="no-data">No alerts yet — start monitoring to see data</td></tr>';return;
+  }
+  tbody.innerHTML = data.hits.hits.map(h=>{
+    const a=h._source;
+    const t=new Date(a['@timestamp']).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    let blockCol = '';
+    if(a.blocked){
+      blockCol=`<span class="btn-blocked">✅ Blocked</span>`;
+    } else if(a.action==='HUMAN_REVIEW'){
+      blockCol=`<button class="btn-block" onclick="blockIP('${a.src_ip}',this)" title="Manually block this IP">🛡 Block</button>`;
+    } else if(a.action==='AUTO_BLOCK'){
+      blockCol=`<span class="btn-blocked">✅ Auto</span>`;
+    } else if(a.action==='MANUAL_BLOCK'){
+      blockCol=`<span class="btn-blocked" style="color:var(--cyan)">🔒 Manual</span>`;
+    } else if(a.action==='GRACE_PERIOD'){
+      blockCol=`<span class="btn-blocked" style="color:var(--accent2)">⏳ Pending</span>`;
+    } else {
+      blockCol='—';
+    }
+    const flowT = a.flow_timestamp ? new Date(a.flow_timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '—';
+    return `<tr>
+      <td style="white-space:nowrap">${t}</td>
+      <td style="white-space:nowrap;color:var(--accent2);font-weight:600">${flowT}</td>
+      <td><span class="sensor-badge">${a.sensor_name||'unknown'}</span></td>
+      <td><strong>${a.src_ip||'—'}</strong></td>
+      <td>${a.dst_ip||'—'}</td>
+      <td>${a.attack_type||'—'}</td>
+      <td><strong>${(a.confidence||0).toFixed(1)}%</strong></td>
+      <td><span class="sev-badge sev-${a.severity}">${a.severity}</span></td>
+      <td><span class="action-badge action-${a.action}">${(a.action||'').replace('_',' ')}</span></td>
+      <td style="font-size:11px">${a.mitre_technique||''}</td>
+      <td>${blockCol}</td>
+      <td style="white-space:nowrap">
+        ${a.feedback ? `<span class="btn-blocked" style="color:var(--text);border-color:var(--border)">✓ ${a.feedback}</span>` : 
+        `<button class="btn-block" style="background:var(--green)" onclick="sendFeedback('${h._id}', 'FP / Benign', this)" title="Mark as False Positive">👍 Benign</button>
+         <button class="btn-block" style="background:var(--red)" onclick="sendFeedback('${h._id}', 'TP / Threat', this)" title="Mark as True Positive">🚨 Threat</button>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── SEND ADMIN FEEDBACK ───
+async function sendFeedback(docId, label, btn) {
+  const td = btn.parentElement;
+  td.innerHTML = '<span class="btn-blocked" style="color:var(--muted);border-color:var(--border)">⏳ Updating...</span>';
+  try {
+    const r = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': document.cookie.split('; ').find(c => c.startsWith('cogsoc_token=')).split('=')[1]
+      },
+      body: JSON.stringify({doc_id: docId, feedback: label})
+    });
+    const res = await r.json();
+    if(res.success) {
+      td.innerHTML = `<span class="btn-blocked" style="color:var(--text);border-color:var(--border)">✓ ${label}</span>`;
+      setTimeout(refreshAll, 1000);
+    } else {
+      td.innerHTML = `<span style="color:var(--red)">❌ Error</span>`;
+    }
+  } catch(e) {
+    td.innerHTML = `<span style="color:var(--red)">❌ Failed</span>`;
+  }
+}
+
+// ─── SENSOR CHARTS ───
+async function loadSensorCharts() {
+  // Flow count by sensor (flows index uses text type, need .keyword)
+  const flowData = await esQuery(FLOWS+'*', {size:0, aggs:{sensors:{terms:{field:'sensor_name.keyword',size:20}}}});
+  if(flowData) {
+    const b = flowData.aggregations?.sensors?.buckets || [];
+    destroyChart('sensor');
+    charts.sensor = new Chart(document.getElementById('sensorChart'),{
+      type:'bar', data:{labels:b.map(x=>x.key||'unknown'),
+        datasets:[{label:'Flows', data:b.map(x=>x.doc_count),
+          backgroundColor:CHART_COLORS.map(c=>c+'cc'), borderColor:CHART_COLORS, borderWidth:1, borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{title:{display:true,text:'Sensor Name',color:'#64748b',font:{size:11}},ticks:{font:{size:11}}},
+          y:{title:{display:true,text:'Total Flows',color:'#64748b',font:{size:11}},beginAtZero:true,ticks:{font:{size:10}}}
+        }}
+    });
+  }
+  // Alert count by sensor
+  const alertData = await esQuery(ALERTS, {size:0, aggs:{sensors:{terms:{field:'sensor_name.keyword',size:20}}}});
+  if(alertData) {
+    const b = alertData.aggregations?.sensors?.buckets || [];
+    destroyChart('sensorAlert');
+    charts.sensorAlert = new Chart(document.getElementById('sensorAlertChart'),{
+      type:'doughnut', data:{labels:b.map(x=>x.key||'unknown'),
+        datasets:[{data:b.map(x=>x.doc_count),
+          backgroundColor:CHART_COLORS.map(c=>c+'cc'), borderWidth:0, hoverOffset:8}]},
+      options:{responsive:true,maintainAspectRatio:false, cutout:'60%',
+        plugins:{legend:{position:'bottom',labels:{padding:14,boxWidth:12,font:{size:11}}}}}
+    });
+  }
+}
+
+// ─── REFRESH ALL ───
+let _refreshing = false;
+async function refreshAll() {
+  if (_refreshing) return;
+  _refreshing = true;
+  try {
+    await loadSensors();
+    const results = await Promise.all([loadStats(), loadTimeline(), loadSeverity(),
+      loadAttackTypes(), loadTopAttackers(), loadActions(), loadMitre(), loadAlerts(), loadSensorCharts()]);
+
+    // Check for new alerts
+    const currentCount = parseInt(document.getElementById('totalAlerts')?.textContent?.replace(/,/g,'') || '0');
+    if (_lastAlertCount > 0 && currentCount > _lastAlertCount) {
+      const diff = currentCount - _lastAlertCount;
+      document.getElementById('lastUpdate').innerHTML =
+        `Live • Updated ${new Date().toLocaleTimeString()} • <span class="new-badge">+${diff} NEW</span>`;
+      // Flash the alerts table
+      document.querySelectorAll('#alertsTable tr').forEach((r,i) => {
+        if (i < diff) r.classList.add('flash-new');
+        setTimeout(() => r.classList.remove('flash-new'), 2000);
+      });
+    } else {
+      const f = getFilter();
+      document.getElementById('lastUpdate').textContent =
+        `Live ${f?'['+f+']':'[All]'} • ${new Date().toLocaleTimeString()} • Auto ${REFRESH/1000}s`;
+    }
+    _lastAlertCount = currentCount;
+  } catch(e) { console.error('Refresh error:', e); }
+  _refreshing = false;
+}
+
+// Countdown progress bar
+function startCountdown() {
+  let bar = document.querySelector('.countdown-bar');
+  if (!bar) { bar = document.createElement('div'); bar.className = 'countdown-bar'; document.body.prepend(bar); }
+  let elapsed = 0;
+  const step = 50;
+  clearInterval(_countdownTimer);
+  bar.style.width = '0%';
+  _countdownTimer = setInterval(() => {
+    elapsed += step;
+    bar.style.width = (elapsed / REFRESH * 100) + '%';
+    if (elapsed >= REFRESH) { elapsed = 0; bar.style.width = '0%'; }
+  }, step);
+}
+
+async function blockIP(ip, btn) {
+  if(!confirm(`Block IP ${ip} via firewall?`)) return;
+  btn.disabled = true;
+  btn.textContent = '⏳ Blocking...';
+  try {
+    const r = await fetch('/block', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ip, duration:30})
+    });
+    const text = await r.text();
+    let data;
+    try { data = JSON.parse(text); } catch(_) { data = {status:'logged_only'}; }
+    if(data.status==='success'){
+      btn.outerHTML='<span class="btn-blocked" style="color:var(--cyan)">🔒 Blocked</span>';
+    } else {
+      btn.outerHTML='<span class="btn-blocked" style="color:var(--orange)">📋 Logged</span>';
+    }
+    setTimeout(refreshAll, 2000);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '🛡 Block';
+    alert('Block failed — make sure dashboard.py is restarted');
+  }
+}
+
+refreshAll();
+startCountdown();
+setInterval(refreshAll, REFRESH);
+</script>
+</body>
+</html>
